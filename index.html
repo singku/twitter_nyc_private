@@ -1,0 +1,79 @@
+<html>
+<head>
+    <title>Twitts with socket.io and node.js</title>
+    <style>
+        #chat {
+            height:500px;
+            overflow:scroll;
+        }
+        #chatWrap{
+            float:left;
+            border: 10px #000 solid;
+        }
+        #trend {
+            float:right;
+        }
+        .error{
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="contentWrap">
+        <div id="chatWrap">
+            <div id="chat" ></div>
+        </div>
+        <div id="keys"></div>
+		<div id="trend"></div>
+    </div>
+    <form id="wordTrend">
+        <input size="35" id="chosenKey"></input>
+        <input type="submit"></input>
+        <div id="keyError"></div>
+    </form>
+
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        jQuery(function($){
+            var socket = io.connect();
+            var $lists = $('#keys');
+            var $chat = $('#chat');
+            var $keyForm = $('#wordTrend');
+            var $keyBox = $('#chosenKey');
+            var $keyError = $('#keyError');
+            var $trend = $('#trend');
+
+            socket.on('keyword sorted list', function(data){
+                var html = '';
+                for (var i=0; i < data.length; i++){
+                    html += data[i]._id + ' ' + data[i].count + '<br/>' 
+                }
+                $lists.html(html);
+            });
+
+            socket.on('new tweets', function(data) {
+                displayMsg(data);
+            });
+
+            $keyForm.submit(function(e) {
+                e.preventDefault();
+                socket.emit('keyword trend', $keyBox.val(), function(data) {
+                    if (data) {
+                        $keyError.html('<font color=red>No result. Try again@!</font>');
+                    }
+                });
+            });
+
+            socket.on('keyword trend', function(data) {
+                $trend.append(JSON.stringify(data) + "<br/>");   
+            });
+
+            function displayMsg(data)  {
+                $chat.append('<span class="msg"><b>' + data.user + ': </b>' + data.text + ' ' + data.coord[0] + "</span><br/>");
+                $chat.scrollTop($chat[0].scrollHeight);
+            }
+        });
+    </script>
+</body>
+</html>
