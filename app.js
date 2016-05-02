@@ -6,7 +6,7 @@ var express = require('express'),
     twitter = require('twitter'),
     users = {};
 
-server.listen(8080);
+server.listen(3000);
 
 mongoose.connect('mongodb://localhost/twitter', function(err) {
     if (err) {
@@ -37,7 +37,7 @@ twittClient.stream('statuses/filter', {locations: '-74,40,-73,41'}, function(str
 
         var user = tweet.user.screen_name;
         var text = tweet.text;
-        var coord = tweet.place.bounding_box.coordinates;
+        var coord = tweet.place.bounding_box.coordinates[0];
         var time = parseInt(tweet.timestamp_ms);
         var content = {
             "user":user,
@@ -75,7 +75,7 @@ twittClient.stream('statuses/filter', {locations: '-74,40,-73,41'}, function(str
             storeHashtag(tweet);
             storeMention(tweet);
         }
-        //console.log(tweet.text);  
+        //console.log(tweet.text);
         storeKeywords(tweet);
         io.sockets.emit('new tweets', content);
     });
@@ -149,6 +149,6 @@ io.sockets.on('connection', function(socket) {
 
     //socket io cmd format
     socket.on('cmd', function(data, callback) {
-        
+
     });
 });
