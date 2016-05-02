@@ -96,15 +96,11 @@
                         html += data[i]._id + ' ' + data[i].count + '<br/>'
                     }
                     $lists.html(html);
+                    displayPieChart(number,topic);
                 });
 
                 socket.on('new tweets', function(data) {
-                    var popup = new mapboxgl.Popup({closeOnClick: true})
                     displayMsg(data);
-                    displayPopup(data, popup);
-                    // setInterval(, 3000);
-                    //popup.remove();
-                    // displayPopup(data, popup);
                 });
 
                 $keyForm.submit(function(e) {
@@ -117,13 +113,12 @@
                 });
 
                 socket.on('keyword trend', function(data) {
+
                     $trend.append(JSON.stringify(data) + "<br/>");
                     displayLineChart(data);
-                    displayPieChart(number,topic);
                 });
 
-
-               function displayLineChart(data){
+            function displayLineChart(data){
                 // line chart data
                 var lineData = {
                     labels: ["1", "2", "3", "4", "5", "6", "7","8","9","10","11","12"],
@@ -142,9 +137,9 @@
                     };
                     var ctx = document.getElementById('line').getContext('2d');
                     new Chart(ctx).Line(lineData);
-                };
+            };
 
-                function displayPieChart(number,topic){
+            function displayPieChart(number,topic){
                     // pie chart data, rank with topic 1-3 and search topic
                     var pieData = [
                         {
@@ -182,18 +177,17 @@
                     var ctx1 = document.getElementById("pie").getContext("2d");
                     // draw pie chart
                     new Chart(ctx1).Pie(pieData, pieOptions);
-                };
-
-            function displayMsg(data) {
-                    $chat.append('<span class="msg"><b>' + data.user + ': </b>' + data.text + ' ' + data.coord[0] + "</span><br/>");
-                    $chat.scrollTop($chat[0].scrollHeight);
             };
-            function displayPopup(data, popup) {
-                // var tooltip = new mapboxgl.Popup({closeOnClick: true})
-                popup.setLngLat([data.coord[0][0] + Math.random() * 0.02 - 0.01, data.coord[0][1] + Math.random() * 0.02 - 0.01])
-                      .setHTML(data.text)
-                      .addTo(map);
+
+            function displayMsg(data){
+                    $chat.append('<span class="msg"><b>' + data.user + ': </b>' + data.text + ' ' + data.coord + "</span><br/>");
+                    $chat.scrollTop($chat[0].scrollHeight);
+                    var tooltip = new mapboxgl.Popup({closeOnClick: true})
+                        .setLngLat(data.coord)
+                        .setHTML(data.user)
+                        .addTo(map);
             }
+
             mapboxgl.accessToken = 'pk.eyJ1Ijoid2Vpc2hpIiwiYSI6ImNpbmc5cHV4bzFnOHJ1Zmx3ZGxpaGU0aGIifQ.L20RZ709ePgurmOeOYPwXg';
             var map = new mapboxgl.Map({
                 container: 'map', // container id
