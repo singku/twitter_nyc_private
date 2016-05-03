@@ -6,7 +6,7 @@ var express = require('express'),
     twitter = require('twitter'),
     users = {};
 
-server.listen(8080);
+server.listen(80);
 
 mongoose.connect('mongodb://localhost/twitter', function(err) {
     if (err) {
@@ -32,12 +32,17 @@ var twittClient = new twitter({
   access_token_secret: '3KJc4uG2HjXM3dwL9vZk0110PzlpmJcDwOisobliiQKhe'
 });
 
-twittClient.stream('statuses/filter', {locations: '-74,40,-73,41'}, function(stream) {
+twittClient.stream('statuses/filter', {locations: '-73.999730,40.752123,-73.975167,40.762188'}, function(stream) {
     stream.on('data', function(tweet) {
 
         var user = tweet.user.screen_name;
         var text = tweet.text;
-        var coord = tweet.place.bounding_box.coordinates;
+        var coord = tweet.place.bounding_box.coordinates[0];
+        if(tweet.coordinates != null) {
+            coord = tweet.coordinates;
+        } else {
+            coord = [Math.random() * (coord[0][0] - coord[2][0]) + coord[2][0], Math.random() * (coord[0][1] - coord[1][1]) + coord[1][1]];
+        }
         var time = parseInt(tweet.timestamp_ms);
         var content = {
             "user":user,
@@ -109,15 +114,28 @@ function schemaGetKeyTrendBetween(keyword, start, end) {
 
 io.sockets.on('connection', function(socket) {
     //respond keywords list on connection
-    var end = Date.now();
-    var start = end - 7200*1000;
-    twittHandle.aggregate(schemaGetFirstNBetween(start, end, 10), function(err, docs) {
-        //console.log(docs);
-        socket.emit('keyword sorted list', docs);
+
+    function updateKeywordList() {
+        var end = Date.now();
+        var start = end - 7200*1000;
+        twittHandle.aggregate(schemaGetFirstNBetween(start, end, 10), function(err, docs) {
+            socket.emit('keyword sorted list', docs);
+        });
+    }
+
+    updateKeywordList();
+
+    socket.on('update keyword list', function() {
+        updateKeywordList();
     });
 
     //req and rsp of keyword trend
     socket.on('keyword trend', function(data, callback) {
+        var end = Date.now();
+        var start = end - 7200*1000;
+		if (data == undefined) {
+			return;
+		}
         twittHandle.aggregate(schemaGetKeyTrendBetween(data.trim().toUpperCase(), start, end), function(err, docs) {
             //console.log(docs);
 			if (docs.length == 0) {
