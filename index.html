@@ -172,13 +172,13 @@
             
             var hashRank = []; //descending sorted array with every element like [key, value] (sorted by value)
             var mentionRank = []; //descending sorted array ...
-            var lastRankData = new Map(); // [key,value] value is set of coords
+            var lastHashData = new Map(); // [key,value] value is set of coords
             var lastMentionData = new Map();
 
             socket.on('past data', function(data) {
                 var hashRankNsort = {};
                 var mentionRankNsort = {};
-                lastRankData.clear();
+                lastHashData.clear();
                 lastMentionData.clear();
 
                 for (var i = 0; i < data.length; i++) {
@@ -204,11 +204,11 @@
                         }
                         //map
                         var locs = [];
-                        if (lastRankData.has(property)) {
-                            locs = lastRankData.get(property);
+                        if (lastHashData.has(property)) {
+                            locs = lastHashData.get(property);
                         }
                         locs.push(data[i].location);
-                        lastRankData.set(property, locs)
+                        lastHashData.set(property, locs)
                     }
                 }
                 hashRank = [];
@@ -225,7 +225,7 @@
 
                 //console.log(hashRank);
                 //console.log(mentionRank);
-                //console.log(lastRankData);
+                //console.log(lastHashData);
             });
 
             socket.on('keyword sorted list', function(data){
