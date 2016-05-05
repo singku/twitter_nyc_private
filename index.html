@@ -169,10 +169,14 @@
             var topic = new Array(5);
             var iterator = 0;
             var topKey = new Map();
+            socket.on('past data', function(data) {
+                console.log(data);
+            });
+
             socket.on('keyword sorted list', function(data){
                 var html = '';
                 for(var n=0; n < 5; n++){
-                    number[n] = data[n].count;
+                    //number[n] = data[n].count;
                 }
                 topKey.clear();
                 for (var n = 0; n < 3; n++) {
@@ -226,7 +230,6 @@
             var lineExtraDataResult;
 
             socket.on('keyword trend', function(data) {
-                //$trend.append(JSON.stringify(data) + "<br/>");
                 if (topKey.has(data.key)) {
                     lineTopDataMap.set(data.key, data.result);
                 } else {
@@ -238,7 +241,6 @@
                     key: lineExtraDataKey,
                     result: lineExtraDataResult
                 }
-                //console.log(dataset);
                 var cnt = 0;
                 datasets[cnt++] = dataset;
                 for (let [key, value] of lineTopDataMap.entries()) {
@@ -246,7 +248,6 @@
                         key: key,
                         result: value
                     }
-                    console.log(dataset);
                     datasets[cnt++] = dataset;
                 }
                 displayLineChart(datasets);

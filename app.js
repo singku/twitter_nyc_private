@@ -4,9 +4,27 @@ var express = require('express'),
     io = require('socket.io').listen(server),
     mongoose = require('mongoose'),
     twitter = require('twitter'),
+    turf = require('turf'),
     users = {};
 
 server.listen(80);
+
+var fs = require("fs");
+// read file
+function readJsonFileSync(filepath, encoding) {
+    if (typeof (encoding) == 'undefined') {
+        encoding = 'utf8';
+    }
+    var file = fs.readFileSync(filepath, encoding);
+    return JSON.parse(file);
+}
+
+function readJson(file) {
+    var filepath = __dirname + '/' + file;
+    return readJsonFileSync(filepath);
+}
+
+var manhattanLoc = readJson('manhattan.geojson');
 
 mongoose.connect('mongodb://localhost/twitter', function(err) {
     if (err) {
@@ -20,7 +38,10 @@ var twittSchema = mongoose.Schema({
     keyword: String,
     type: String,
     time: Number,
-    location: Array
+    location: Array,
+    createDate:  {
+     type: Date, expires: 60*60*24*5, default:Date.now
+    },
 });
 
 var twittHandle = mongoose.model('Twitters', twittSchema);
@@ -32,17 +53,35 @@ var twittClient = new twitter({
   access_token_secret: '3KJc4uG2HjXM3dwL9vZk0110PzlpmJcDwOisobliiQKhe'
 });
 
-twittClient.stream('statuses/filter', {locations: '-73.999730,40.752123,-73.975167,40.762188'}, function(stream) {
+twittClient.stream('statuses/filter', {locations: '-74,40,-73,41'}, function(stream) {
     stream.on('data', function(tweet) {
-
         var user = tweet.user.screen_name;
         var text = tweet.text;
-        var coord = tweet.place.bounding_box.coordinates[0];
-        if(tweet.coordinates != null) {
-            coord = tweet.coordinates;
+        var coord;// = tweet.place.bounding_box.coordinates[0];
+        var point;
+        if (tweet.coordinates == null) {
+            var box = tweet.place.bounding_box.coordinates[0]
+            point = turf.random('points', 1, {
+                    bbox: [box[0][0], box[0][1], box[2][0], box[2][1]]
+                }).features[0];
+            coord = point.geometry.coordinates;
         } else {
-            coord = [Math.random() * (coord[0][0] - coord[2][0]) + coord[2][0], Math.random() * (coord[0][1] - coord[1][1]) + coord[1][1]];
+            point = {
+                "type": "Feature",
+                "geometry": {
+                    "type" : "Point",
+                    "coordinates": tweet.coordinates
+                }
+            }
+            coord = tweet.coordinates.coordinates;
         }
+        //console.log(coord);
+        var valid = manhattanLoc.features.some(function (f) {
+            if (turf.inside(point, f)) {
+                return true;
+            }
+        })
+        if (!valid) return;
         var time = parseInt(tweet.timestamp_ms);
         var content = {
             "user":user,
@@ -80,7 +119,7 @@ twittClient.stream('statuses/filter', {locations: '-73.999730,40.752123,-73.9751
             storeHashtag(tweet);
             storeMention(tweet);
         }
-        //console.log(tweet.text);  
+        //console.log(content);  
         storeKeywords(tweet);
         io.sockets.emit('new tweets', content);
     });
@@ -107,7 +146,14 @@ function schemaGetFirstNBetween(start, end, N) {
 function schemaGetKeyTrendBetween(keyword, start, end) {
     var schema = [
         { $match: {"time": {$gte:start, $lt:end}, "keyword":keyword}},
-        { $sort: {time: 1}},
+        { $sort: {time: 1}}
+    ];
+    return schema;
+}
+
+function shcemaGetData(start, end) {
+    var schema = [
+        { $match: {"time": {$gte:start, $lt:end}}}
     ];
     return schema;
 }
@@ -120,10 +166,23 @@ io.sockets.on('connection', function(socket) {
         var start = end - 7200*1000;
         twittHandle.aggregate(schemaGetFirstNBetween(start, end, 10), function(err, docs) {
             socket.emit('keyword sorted list', docs);
+            //console.log(docs);
+        });
+    }
+
+    function getLast24HoursData() {
+        var end = Date.now();
+        var start = end - 86400*1000;
+        var query = twittHandle.find(shcemaGetData(start, end));
+        query.select({"keyword":1, "_id":0, "type":1, "location":1});
+        query.exec(function(err, docs) {
+            socket.emit('past data', docs);
+            //console.log(docs);
         });
     }
 
     updateKeywordList();
+    getLast24HoursData();
 
     socket.on('update keyword list', function() {
         updateKeywordList();
@@ -139,7 +198,7 @@ io.sockets.on('connection', function(socket) {
         twittHandle.aggregate(schemaGetKeyTrendBetween(data.trim().toUpperCase(), start, end), function(err, docs) {
             //console.log(docs);
 			if (docs.length == 0) {
-				callback("No Data");
+				if (callback != undefined) callback("No Data");
 				return;
 			}
             var result = [];
@@ -166,7 +225,7 @@ io.sockets.on('connection', function(socket) {
     });
 
     //socket io cmd format
-    socket.on('cmd', function(data, callback) {
-        
+    socket.on('past data', function() {
+        getLast24HoursData();
     });
 });
