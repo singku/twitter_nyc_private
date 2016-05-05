@@ -181,7 +181,7 @@ io.sockets.on('connection', function(socket) {
         });
     }
 
-    updateKeywordList();
+    //updateKeywordList();
     getLast24HoursData();
 
     socket.on('update keyword list', function() {

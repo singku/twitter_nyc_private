@@ -169,14 +169,69 @@
             var topic = new Array(5);
             var iterator = 0;
             var topKey = new Map();
+            
+            var hashRank = []; //descending sorted array with every element like [key, value] (sorted by value)
+            var mentionRank = []; //descending sorted array ...
+            var lastRankData = new Map(); // [key,value] value is set of coords
+            var lastMentionData = new Map();
+
             socket.on('past data', function(data) {
-                console.log(data);
+                var hashRankNsort = {};
+                var mentionRankNsort = {};
+                lastRankData.clear();
+                lastMentionData.clear();
+
+                for (var i = 0; i < data.length; i++) {
+                    var property = data[i].keyword;
+                    if (data[i].type == "mention") {
+                        if (mentionRankNsort[property] === undefined) {
+                            mentionRankNsort[property] = 1;
+                        } else {
+                            mentionRankNsort[property] ++;
+                        }
+                        //map
+                        var locs = [];
+                        if (lastMentionData.has(property)) {
+                            locs = lastMentionData.get(property);
+                        }
+                        locs.push(data[i].location);
+                        lastMentionData.set(property, locs);
+                    } else {
+                        if (hashRankNsort[property] === undefined) {
+                            hashRankNsort[property] = 1;
+                        } else {
+                            hashRankNsort[property] ++;
+                        }
+                        //map
+                        var locs = [];
+                        if (lastRankData.has(property)) {
+                            locs = lastRankData.get(property);
+                        }
+                        locs.push(data[i].location);
+                        lastRankData.set(property, locs)
+                    }
+                }
+                hashRank = [];
+                mentionRank = [];
+                for (var key in hashRankNsort) {
+                    hashRank.push([key, hashRankNsort[key]]);
+                }
+                hashRank.sort(function(a, b) {return b[1] - a[1]});
+
+                for (var key in mentionRankNsort) {
+                    mentionRank.push([key, mentionRankNsort[key]]);
+                }
+                mentionRank.sort(function(a, b) {return a[1] - b[1]});
+
+                //console.log(hashRank);
+                //console.log(mentionRank);
+                //console.log(lastRankData);
             });
 
             socket.on('keyword sorted list', function(data){
                 var html = '';
                 for(var n=0; n < 5; n++){
-                    //number[n] = data[n].count;
+                    number[n] = data[n].count;
                 }
                 topKey.clear();
                 for (var n = 0; n < 3; n++) {
@@ -207,10 +262,12 @@
                     socket.emit('keyword trend', topic[i]);
                 }
             }
-
-            var refreshId = setInterval(refreshKeylist, 50000);
-            var refreshLineId = setInterval(refreshLineChart, 50000);
-			refreshKeylist();
+            function refreshPastData() {
+                socket.emit('past data');
+            }
+            var refreshId = setInterval(refreshPastData, 180000);
+            //var refreshLineId = setInterval(refreshLineChart, 50000);
+			//refreshKeylist();
 
             function sendTrendRequest(key) {
                 socket.emit('keyword trend', $keyBox.val(), function(data) {
@@ -250,7 +307,7 @@
                     }
                     datasets[cnt++] = dataset;
                 }
-                displayLineChart(datasets);
+                //displayLineChart(datasets);
             });
 
             function displayLineChart(data){
@@ -340,7 +397,7 @@
                 container: 'map'
                 , style: 'mapbox://styles/mapbox/dark-v8'
                 , center: [-73.961425, 40.786338]
-                , zoom: 10.7
+                , zoom: 11.7
             });
         });
     </script>
