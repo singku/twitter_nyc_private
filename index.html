@@ -1,12 +1,13 @@
 <html>
+
 <head>
     <title>Twitts Viz with socket.io and node.js</title>
-    <meta charset='utf-8'/>
+    <meta charset='utf-8' />
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.18.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.18.0/mapbox-gl.css' rel='stylesheet' />
 
-     <!-- Latest compiled and minified CSS -->
+    <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 
     <!-- jQuery library -->
@@ -18,74 +19,84 @@
         #contentWrap {
             width: 60%;
             margin-left: 50px;
-            background-color: rgba(52, 152, 219, 0); 
+            background-color: rgba(52, 152, 219, 0);
         }
+        
         #chat {
-            background-color: rgba(52, 152, 219, 0.2); 
-            height:100px;
+            background-color: rgba(52, 152, 219, 0.2);
+            height: 100px;
             /*width: 100%;*/
-            overflow:scroll;
+            overflow: scroll;
             margin-bottom: 0px;
             margin-left: 0px;
         }
-        #chatWrap{
-            float:left;
+        
+        #chatWrap {
+            float: left;
             width: 100%;
             border: 10px #000 solid;
         }
+        
         #trend {
-            float:right;
+            float: right;
         }
-        .error{
+        
+        .error {
             color: red;
         }
+        
         #test {
-            background-color: rgba(52, 152, 219, 0.2); 
+            background-color: rgba(52, 152, 219, 0.2);
             color: black;
             position: fixed;
             top: 500px;
             right: 20px;
         }
+        
         #pie {
             position: absolute;
             left: 20px;
             top: 130px;
         }
+        
         #line {
             position: absolute;
             left: 20px;
             top: 350px;
         }
-
+        
         #map {
             position: absolute;
             top: 0;
             bottom: 0;
             width: 100%;
-            z-index: -1;
+            /*            z-index: -1;*/
         }
+        
         .msg {
             border: 0px solid #3498DB;
             border-radius: 5px;
             color: #fff;
-            background-color: rgba(52, 152, 219, 0); 
+            background-color: rgba(52, 152, 219, 0);
             top: 20px;
             margin-left: 0;
             margin-right: auto;
             left: 0;
-            right: 0; 
+            right: 0;
         }
+        
         #keys {
             border: 0px solid #3498DB;
             border-radius: 5px;
             color: #fff;
-            background-color: rgba(52, 152, 219, 0.2); 
+            background-color: rgba(52, 152, 219, 0.2);
             top: 20px;
             margin-left: auto;
             margin-right: auto;
             left: 0;
-            right: 0; 
+            right: 0;
         }
+        
         .search {
             padding: 5px 0;
             width: 230px;
@@ -95,7 +106,7 @@
             float: left;
             line-height: 22px;
         }
-
+        
         .search input {
             position: absolute;
             width: 0px;
@@ -108,298 +119,368 @@
             height: 30px;
             line-height: 18px;
             padding: 0 2px 0 2px;
-            border-radius:1px;
+            border-radius: 1px;
         }
-
-        .search:hover input, .search input:focus {
+        
+        .search:hover input,
+        .search input:focus {
             width: 200px;
             margin-left: 0px;
         }
-
+        
         .btn {
             height: 30px;
             position: absolute;
             right: 0;
             top: 5px;
-            border-radius:1px;
+            border-radius: 1px;
         }
     </style>
 </head>
-    
+
 <body>
     <canvas id="pie" width="200" height="200"></canvas>
     <canvas id="line" width="350" height="300"></canvas>
 
     <div id='map'></div>
-	<div class="row" >
-	    <div class="small-6 columns small-centered">
-	        <div class="alert alert-info" id="chat" ><span>Real-Time Tweets</span>
+    <div class="row">
+        <div class="small-6 columns small-centered">
+            <div class="alert alert-info" id="chat"><span>Real-Time Tweets</span>
+            </div>
         </div>
-	</div>
 
-	<div id="test">
-	    <form id="wordTrend">
-	        <div class="row">
-	            <div class="search">
-	                <input type="text" class="form-control input-sm" maxlength="64" placeholder="Search"  id="chosenKey"/>
-	                <button type="submit" class="btn btn-primary btn-sm">Search</button>
-	            </div>
-	        </div>
+        <div id="test">
+            <form id="wordTrend">
+                <div class="row">
+                    <div class="search">
+                        <input type="text" class="form-control input-sm" maxlength="64" placeholder="Search" id="chosenKey" />
+                        <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                    </div>
+                </div>
 
-	        <div id="keyError"></div>
-	    </form>
-	    <div id="keys"></div>
-	</div>
+                <div id="keyError"></div>
+            </form>
+            <div id="keys"></div>
+        </div>
 
-    <div id="trend"></div>
+        <div id="trend"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
-    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        jQuery(function($){
-            var socket = io.connect();
-            var $lists = $('#keys');
-            var $chat = $('#chat');
-            var $keyForm = $('#wordTrend');
-            var $keyBox = $('#chosenKey');
-            var $keyError = $('#keyError');
-            var $trend = $('#trend');
-            var number = new Array(5);
-            var topic = new Array(5);
-            var iterator = 0;
-            var topKey = new Map();
-            
-            var hashRank = []; //descending sorted array with every element like [key, value] (sorted by value)
-            var mentionRank = []; //descending sorted array ...
-            var lastHashData = new Map(); // [key,value] value is set of coords
-            var lastMentionData = new Map();
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            jQuery(function ($) {
+                var socket = io.connect();
+                var $lists = $('#keys');
+                var $chat = $('#chat');
+                var $keyForm = $('#wordTrend');
+                var $keyBox = $('#chosenKey');
+                var $keyError = $('#keyError');
+                var $trend = $('#trend');
+                var number = new Array(5);
+                var topic = new Array(5);
+                var iterator = 0;
+                var topKey = new Map();
 
-            socket.on('past data', function(data) {
-                var hashRankNsort = {};
-                var mentionRankNsort = {};
-                lastHashData.clear();
-                lastMentionData.clear();
+                var hashRank = []; //descending sorted array with every element like [key, value] (sorted by value)
+                var mentionRank = []; //descending sorted array ...
+                var lastHashData = new Map(); // [key,value] value is set of coords
+                var lastMentionData = new Map();
 
-                for (var i = 0; i < data.length; i++) {
-                    var property = data[i].keyword;
-                    if (data[i].type == "mention") {
-                        if (mentionRankNsort[property] === undefined) {
-                            mentionRankNsort[property] = 1;
+                socket.on('past data', function (data) {
+                    var hashRankNsort = {};
+                    var mentionRankNsort = {};
+                    lastHashData.clear();
+                    lastMentionData.clear();
+
+                    for (var i = 0; i < data.length; i++) {
+                        var property = data[i].keyword;
+                        if (data[i].type == "mention") {
+                            if (mentionRankNsort[property] === undefined) {
+                                mentionRankNsort[property] = 1;
+                            } else {
+                                mentionRankNsort[property]++;
+                            }
+                            //map
+                            var locs = [];
+                            if (lastMentionData.has(property)) {
+                                locs = lastMentionData.get(property);
+                            }
+                            locs.push(data[i].location);
+                            lastMentionData.set(property, locs);
                         } else {
-                            mentionRankNsort[property] ++;
+                            if (hashRankNsort[property] === undefined) {
+                                hashRankNsort[property] = 1;
+                            } else {
+                                hashRankNsort[property]++;
+                            }
+                            //map
+                            var locs = [];
+                            if (lastHashData.has(property)) {
+                                locs = lastHashData.get(property);
+                            }
+                            locs.push(data[i].location);
+                            lastHashData.set(property, locs)
                         }
-                        //map
-                        var locs = [];
-                        if (lastMentionData.has(property)) {
-                            locs = lastMentionData.get(property);
-                        }
-                        locs.push(data[i].location);
-                        lastMentionData.set(property, locs);
-                    } else {
-                        if (hashRankNsort[property] === undefined) {
-                            hashRankNsort[property] = 1;
-                        } else {
-                            hashRankNsort[property] ++;
-                        }
-                        //map
-                        var locs = [];
-                        if (lastHashData.has(property)) {
-                            locs = lastHashData.get(property);
-                        }
-                        locs.push(data[i].location);
-                        lastHashData.set(property, locs)
                     }
-                }
-                hashRank = [];
-                mentionRank = [];
-                for (var key in hashRankNsort) {
-                    hashRank.push([key, hashRankNsort[key]]);
-                }
-                hashRank.sort(function(a, b) {return b[1] - a[1]});
-
-                for (var key in mentionRankNsort) {
-                    mentionRank.push([key, mentionRankNsort[key]]);
-                }
-                mentionRank.sort(function(a, b) {return b[1] - a[1]});
-
-                //console.log(hashRank);
-                //console.log(mentionRank);
-                //console.log(lastHashData);
-            });
-
-            socket.on('keyword sorted list', function(data){
-                var html = '';
-                for(var n=0; n < 5; n++){
-                    number[n] = data[n].count;
-                }
-                topKey.clear();
-                for (var n = 0; n < 3; n++) {
-                    topKey.set(data[n]._id, 1);
-                }
-
-                for(var t=0; t <5 ; t++){
-                    topic[t] = data[t]._id;
-                }
-                for (var i=0; i < data.length; i++){
-                    html += data[i]._id + ' ' + data[i].count + '<br/>'
-                }
-                $lists.html(html);
-                displayPieChart(number,topic);
-		        refreshLineChart();
-            });
-
-            socket.on('new tweets', function(data) {
-                displayMsg(data);
-            });
-
-            function refreshKeylist() {
-                socket.emit('update keyword list');
-            }
-
-            function refreshLineChart() {
-                for (var i = 0; i < 3; i++) {
-                    socket.emit('keyword trend', topic[i]);
-                }
-            }
-            function refreshPastData() {
-                socket.emit('past data');
-            }
-            var refreshId = setInterval(refreshPastData, 180000);
-            //var refreshLineId = setInterval(refreshLineChart, 50000);
-			//refreshKeylist();
-
-            function sendTrendRequest(key) {
-                socket.emit('keyword trend', $keyBox.val(), function(data) {
-                    if (data) {
-                        $keyError.html('<font color=red>No result. Try again@!</font>');
+                    hashRank = [];
+                    mentionRank = [];
+                    for (var key in hashRankNsort) {
+                        hashRank.push([key, hashRankNsort[key]]);
                     }
+                    hashRank.sort(function (a, b) {
+                        return b[1] - a[1]
+                    });
+
+                    for (var key in mentionRankNsort) {
+                        mentionRank.push([key, mentionRankNsort[key]]);
+                    }
+                    mentionRank.sort(function (a, b) {
+                        return b[1] - a[1]
+                    });
+
+                    //console.log(hashRank);
+                    //console.log(mentionRank);
+                    //console.log(lastHashData);
                 });
-            }
 
-            $keyForm.submit(function(e) {
-                e.preventDefault();
-                sendTrendRequest($keyBox.val());
-            });
-
-            var lineTopDataMap = new Map();
-            var lineExtraDataKey;
-            var lineExtraDataResult;
-
-            socket.on('keyword trend', function(data) {
-                if (topKey.has(data.key)) {
-                    lineTopDataMap.set(data.key, data.result);
-                } else {
-                    lineExtraDataKey = data.key;
-                    lineExtraDataResult = data.result;
-                }
-                var datasets = new Array();
-                var dataset = {
-                    key: lineExtraDataKey,
-                    result: lineExtraDataResult
-                }
-                var cnt = 0;
-                datasets[cnt++] = dataset;
-                for (let [key, value] of lineTopDataMap.entries()) {
-                    var dataset = {
-                        key: key,
-                        result: value
+                socket.on('keyword sorted list', function (data) {
+                    var html = '';
+                    for (var n = 0; n < 5; n++) {
+                        number[n] = data[n].count;
                     }
-                    datasets[cnt++] = dataset;
-                }
-                //displayLineChart(datasets);
-            });
-
-            function displayLineChart(data){
-                var datasets = [];
-                var color = [
-                    "rgba(255, 0, 0, 0.5)",
-                    "rgba(0, 255, 0, 0.5)",
-                    "rgba(0, 0, 255, 0.5)",
-                    "rgba(255, 255, 255, 0.5)",
-                ];
-
-                for (var i  = 0; i < data.length; i++) {
-                    if (data[i].key == undefined) {
-                        continue;
+                    topKey.clear();
+                    for (var n = 0; n < 3; n++) {
+                        topKey.set(data[n]._id, 1);
                     }
-                    var lineData = {
-                        label: data[i].key,
-						fill: false,
-                        strokeColor: color[i], // magenta
-                        pointColor: color[i], // magenta
-                        pointStrokeColor: "#fff", // white
-                        pointHighlightFill: "#fff", // white
-                        pointHighlightStroke: color[i], // magenta
-                        data: data[i].result
-                    }
-                    datasets.push(lineData);
-                }
-                var lineData = {
-                        labels: ["1", "2", "3", "4", "5", "6", "7","8","9","10","11","12"],
-                        datasets: datasets
-                    };
-                    var ctx = document.getElementById('line').getContext('2d');
-                    new Chart(ctx).Line(lineData);
-            };
 
-            function displayPieChart(number,topic){
-                    // pie chart data, rank with topic 1-3 and search topic
-                    var pieData = [
-                        {
-                            label : topic[0],
-                            value : number[0],
-                            color : "#FFFF00"
-                        },
-                        {
-                            label : topic[1],
-                            value : number[1],
-                            color : "#FF0000"
-                        },
-                        {
-                            label : topic[2],
-                            value : number[2],
-                            color : "#9932CC"
-                        },
-                        {
-                            label : topic[3],
-                            value : number[3],
-                            color : "#0000FF"
-                        },
-                        {
-                            label : topic[4],
-                            value : number[4],
-                            color : "#FFFAFA"
+                    for (var t = 0; t < 5; t++) {
+                        topic[t] = data[t]._id;
+                    }
+                    for (var i = 0; i < data.length; i++) {
+                        html += data[i]._id + ' ' + data[i].count + '<br/>'
+                    }
+                    $lists.html(html);
+
+                });
+
+                var tweets_temp = []; // Records data for real-time tweets
+                var map;
+                var point_count = 0;
+                var animation = [[1, 1], [30, 1], [100, 0.5], [300, 0]];
+                //                        mapboxgl.accessToken = 'pk.eyJ1Ijoid2Vpc2hpIiwiYSI6ImNpbmc5cHV4bzFnOHJ1Zmx3ZGxpaGU0aGIifQ.L20RZ709ePgurmOeOYPwXg';
+                //                        map = new mapboxgl.Map({
+                //                            container: 'map'
+                //                            , style: 'mapbox://styles/mapbox/dark-v8'
+                //                            , center: [-73.961425, 40.786338]
+                //                            , zoom: 11.7
+                //                        });
+
+                $(document).ready(function () {
+
+
+                    mapboxgl.accessToken = 'pk.eyJ1Ijoid2Vpc2hpIiwiYSI6ImNpbmc5cHV4bzFnOHJ1Zmx3ZGxpaGU0aGIifQ.L20RZ709ePgurmOeOYPwXg';
+                    map = new mapboxgl.Map({
+                        container: 'map'
+                        , style: 'mapbox://styles/mapbox/dark-v8'
+                        , center: [-73.961425, 40.786338]
+                        , zoom: 11.7
+                    });
+                    //here you try to ask the user position then setView to map
+
+                    map.on('style.load', function () {
+                        registerTempLayer("marker_temp", "lightblue");
+
+                    });
+                });
+
+
+
+
+                socket.on('new tweets', function (data) {
+                    displayMsg(data);
+                    //                    var tweet = manageTweet(data);
+                    //                    console.log(tweet);
+                    showPoint(data);
+
+                });
+
+
+                function manageTweet(tweet) {
+                    return {
+                        "type": "Feature"
+                        , "geometry": {
+                            "type": "Point"
+                            , "coordinates": tweet.coord
                         }
-                    ];
-                    // pie chart options
-                    var pieOptions = {
-                         segmentShowStroke : true,
-                         animateScale : true
+                        , "properties": {
+                            "text": tweet.text
+                                //                            "hashtag": tweet._id
+                        }
                     }
-                    // get pie chart canvas
-                    var ctx1 = document.getElementById("pie").getContext("2d");
-                    // draw pie chart
-                    new Chart(ctx1).Pie(pieData, pieOptions);
-            };
-            var tooltip = new mapboxgl.Popup({closeOnClick: true});
-            function displayMsg(data){
+                }
+
+                function manageTweets(tweets) {
+                    console.log(tweets)
+                    var points = tweets.map(function (tweet) {
+                            return manageTweet(tweet);
+
+                        })
+                        //                    console.log(points);
+                    points = {
+                            "type": "FeatureCollection"
+                            , "features": points
+                        }
+                        //                    console.log(points);
+                    return points;
+                }
+
+                //                function registerLayer(name) {
+                //                    map.addSource(name, {
+                //                        "type": "geojson"
+                //                        , "data": extractPoints([])
+                //                    });
+                //                    map.addLayer({
+                //                        "id": name, // "interactive": true,
+                //                        "type": "symbol"
+                //                        , "source": name
+                //                        , "layout": {
+                //                            //"icon-image": "",
+                //                            "icon-allow-overlap": true
+                //                            , "text-field": "{hashtag}"
+                //                            , "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"]
+                //                            , "text-size": 9
+                //                            , "text-transform": "uppercase"
+                //                            , "text-letter-spacing": 0.05
+                //                            , "text-offset": [0, 1.5]
+                //                        }
+                //                        , "paint": {
+                //                            "text-color": "#202"
+                //                            , "text-halo-color": "#fff"
+                //                            , "text-halo-width": 2
+                //                        }
+                //                    });
+                //                }
+
+                function showPoint(tweet) {
+                    tweets_temp.push(tweet);
+                    //                    console.log(tweets_temp);
+                    ChangeLayerData("marker_temp", tweets_temp);
+                    //                    console.log(tweets_temp)
+                    //                    var cur_point = "marker_point" + point_count;
+                    //                    ++point_count;
+                    //                    registerTempLayer(cur_point, "lightblue");
+                    var cur_point = "marker_point" + point_count;
+                    ++point_count;
+                    registerTempLayer(cur_point, "lightblue");
+                    ChangeLayerData(cur_point, [tweet]);
+                    animatePoint(cur_point, Date.now());
+                }
+
+                function animatePoint(id, start_time) {
+                    var cur_frame = Math.floor((Date.now() - start_time) / 200);
+                    if (cur_frame <= 3) {
+                        map.setPaintProperty(id, "circle-radius", animation[cur_frame][0]);
+                        map.setPaintProperty(id, "circle-opacity", animation[cur_frame][1]);
+                        requestAnimationFrame(function () {
+                            animatePoint(id, start_time);
+                        });
+                    } else {
+                        map.removeSource(id);
+                        map.removeLayer(id);
+                    }
+                }
+
+                function registerTempLayer(name, color) {
+                    map.addSource(name, {
+                        "type": "geojson"
+                        , "data": manageTweets([])
+                    });
+                    map.addLayer({
+                        "id": name, // "interactive": true,
+                        "type": "circle"
+                        , "source": name
+                        , "paint": {
+                            "circle-color": color
+                            , "circle-radius": 5
+                            , "circle-opacity": 0.5
+                        }
+                    });
+                }
+
+                function ChangeLayerData(layer, tweets) {
+                    tweets = manageTweets(tweets);
+                    //                    console.log(tweets);
+                    map.getSource(layer).setData(tweets);
+                }
+
+                function refreshKeylist() {
+                    socket.emit('update keyword list');
+                }
+
+
+                function refreshPastData() {
+                    socket.emit('past data');
+                }
+                var refreshId = setInterval(refreshPastData, 180000);
+                //var refreshLineId = setInterval(refreshLineChart, 50000);
+                //refreshKeylist();
+
+                function sendTrendRequest(key) {
+                    socket.emit('keyword trend', $keyBox.val(), function (data) {
+                        if (data) {
+                            $keyError.html('<font color=red>No result. Try again@!</font>');
+                        }
+                    });
+                }
+
+                $keyForm.submit(function (e) {
+                    e.preventDefault();
+                    sendTrendRequest($keyBox.val());
+                });
+
+                var lineTopDataMap = new Map();
+                var lineExtraDataKey;
+                var lineExtraDataResult;
+
+                socket.on('keyword trend', function (data) {
+                    if (topKey.has(data.key)) {
+                        lineTopDataMap.set(data.key, data.result);
+                    } else {
+                        lineExtraDataKey = data.key;
+                        lineExtraDataResult = data.result;
+                    }
+                    var datasets = new Array();
+                    var dataset = {
+                        key: lineExtraDataKey
+                        , result: lineExtraDataResult
+                    }
+                    var cnt = 0;
+                    datasets[cnt++] = dataset;
+                    for (let [key, value] of lineTopDataMap.entries()) {
+                        var dataset = {
+                            key: key
+                            , result: value
+                        }
+                        datasets[cnt++] = dataset;
+                    }
+          
+                });
+
+
+
+
+             
+
+                function displayMsg(data) {
                     $chat.append('<span class="msg"><b>' + data.user + ': </b>' + data.text + ' ' + "</span><br/>");
                     $chat.scrollTop($chat[0].scrollHeight);
-                    tooltip.remove();
-                    tooltip.setLngLat(data.coord)
-                        .setHTML(data.text)
-                        .addTo(map);
-            }
+               
+                }
 
-            mapboxgl.accessToken = 'pk.eyJ1Ijoid2Vpc2hpIiwiYSI6ImNpbmc5cHV4bzFnOHJ1Zmx3ZGxpaGU0aGIifQ.L20RZ709ePgurmOeOYPwXg';
-            var map = new mapboxgl.Map({
-                container: 'map'
-                , style: 'mapbox://styles/mapbox/dark-v8'
-                , center: [-73.961425, 40.786338]
-                , zoom: 11.7
+
             });
-        });
-    </script>
+        </script>
 </body>
+
 </html>
