@@ -186,6 +186,9 @@
                 var mentionRank = []; //descending sorted array ...
                 var lastHashData = new Map(); // [key,value] value is set of coords
                 var lastMentionData = new Map();
+                var hashTop = [];
+                var mentionTop = [];
+                var restKeyword = [];
 
                 socket.on('past data', function (data) {
                     var hashRankNsort = {};
@@ -238,10 +241,36 @@
                     mentionRank.sort(function (a, b) {
                         return b[1] - a[1]
                     });
-
-                    //console.log(hashRank);
-                    //console.log(mentionRank);
-                    //console.log(lastHashData);
+                    hashTop[0] = []; hashTop[1] = []; hashTop[2] = []; hashTop[3] = []; hashTop[4] = [];
+                    mentionTop[0] = []; mentionTop[1] = []; mentionTop[2] = []; mentionTop[3] = []; mentionTop[4] = [];
+                    for (var i = 0; i < data.length; i++) {
+                        if(data[i].properties.keyword == hashRank[0][0]) { //1st hash
+                            hashTop[0].push(data[i]);
+                        }else if(data[i].properties.keyword == hashRank[1][0]){ //2nd
+                            hashTop[1].push(data[i]);
+                        }else if(data[i].properties.keyword == hashRank[2][0]){ //3rd
+                            hashTop[2].push(data[i]);
+                        }else if(data[i].properties.keyword == hashRank[3][0]){ //4th
+                            hashTop[3].push(data[i]);
+                        }else if(data[i].properties.keyword == hashRank[4][0]){ //5th
+                            hashTop[4].push(data[i]);
+                        }else if(data[i].properties.keyword == mentionRank[0][0]){ //1st mention
+                            mentionTop[0].push(data[i]);
+                        }else if(data[i].properties.keyword == mentionRank[1][0]){ //2nd
+                            mentionTop[1].push(data[i]);
+                        }else if(data[i].properties.keyword == mentionRank[2][0]){ //3rd
+                            mentionTop[2].push(data[i]);
+                        }else if(data[i].properties.keyword == mentionRank[3][0]){ //4th
+                            mentionTop[3].push(data[i]);
+                        }else if(data[i].properties.keyword == mentionRank[4][0]){ //5th
+                            mentionTop[4].push(data[i]);
+                        }else {
+                            restKeyword.push(data[i]);
+                        }
+                    }
+                    console.log(hashTop);
+                    console.log(mentionTop);
+                    // console.log(lastHashData);
                 });
 
                 socket.on('keyword sorted list', function (data) {
@@ -321,7 +350,7 @@
                 }
 
                 function manageTweets(tweets) {
-                    console.log(tweets)
+                    //console.log(tweets)
                     var points = tweets.map(function (tweet) {
                             return manageTweet(tweet);
 
