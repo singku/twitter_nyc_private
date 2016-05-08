@@ -21,7 +21,7 @@
             margin-left: 50px;
             background-color: rgba(52, 152, 219, 0);
         }
-        
+
         #chat {
             background-color: rgba(52, 152, 219, 0.2);
             height: 100px;
@@ -30,21 +30,21 @@
             margin-bottom: 0px;
             margin-left: 0px;
         }
-        
+
         #chatWrap {
             float: left;
             width: 100%;
             border: 10px #000 solid;
         }
-        
+
         #trend {
             float: right;
         }
-        
+
         .error {
             color: red;
         }
-        
+
         #test {
             background-color: rgba(52, 152, 219, 0.2);
             color: black;
@@ -52,19 +52,19 @@
             top: 500px;
             right: 20px;
         }
-        
+
         #pie {
             position: absolute;
             left: 20px;
             top: 130px;
         }
-        
+
         #line {
             position: absolute;
             left: 20px;
             top: 350px;
         }
-        
+
         #map {
             position: absolute;
             top: 0;
@@ -72,7 +72,7 @@
             width: 100%;
             /*            z-index: -1;*/
         }
-        
+
         .msg {
             border: 0px solid #3498DB;
             border-radius: 5px;
@@ -84,7 +84,7 @@
             left: 0;
             right: 0;
         }
-        
+
         #keys {
             border: 0px solid #3498DB;
             border-radius: 5px;
@@ -96,7 +96,7 @@
             left: 0;
             right: 0;
         }
-        
+
         .search {
             padding: 5px 0;
             width: 230px;
@@ -106,7 +106,7 @@
             float: left;
             line-height: 22px;
         }
-        
+
         .search input {
             position: absolute;
             width: 0px;
@@ -121,13 +121,13 @@
             padding: 0 2px 0 2px;
             border-radius: 1px;
         }
-        
+
         .search:hover input,
         .search input:focus {
             width: 200px;
             margin-left: 0px;
         }
-        
+
         .btn {
             height: 30px;
             position: absolute;
@@ -194,8 +194,8 @@
                     lastMentionData.clear();
 
                     for (var i = 0; i < data.length; i++) {
-                        var property = data[i].keyword;
-                        if (data[i].type == "mention") {
+                        var property = data[i].properties.keyword;
+                        if (data[i].properties.type == "mention") {
                             if (mentionRankNsort[property] === undefined) {
                                 mentionRankNsort[property] = 1;
                             } else {
@@ -206,7 +206,7 @@
                             if (lastMentionData.has(property)) {
                                 locs = lastMentionData.get(property);
                             }
-                            locs.push(data[i].location);
+                            locs.push(data[i].geometry.coordinates);
                             lastMentionData.set(property, locs);
                         } else {
                             if (hashRankNsort[property] === undefined) {
@@ -219,7 +219,7 @@
                             if (lastHashData.has(property)) {
                                 locs = lastHashData.get(property);
                             }
-                            locs.push(data[i].location);
+                            locs.push(data[i].geometry.coordinates);
                             lastHashData.set(property, locs)
                         }
                     }
@@ -464,18 +464,18 @@
                         }
                         datasets[cnt++] = dataset;
                     }
-          
+
                 });
 
 
 
 
-             
+
 
                 function displayMsg(data) {
                     $chat.append('<span class="msg"><b>' + data.user + ': </b>' + data.text + ' ' + "</span><br/>");
                     $chat.scrollTop($chat[0].scrollHeight);
-               
+
                 }
 
 

@@ -7,7 +7,7 @@ var express = require('express'),
     turf = require('turf'),
     users = {};
 
-server.listen(80);
+server.listen(3000);
 
 var fs = require("fs");
 // read file
@@ -119,7 +119,7 @@ twittClient.stream('statuses/filter', {locations: '-74,40,-73,41'}, function(str
             storeHashtag(tweet);
             storeMention(tweet);
         }
-        //console.log(content);  
+        //console.log(content);
         storeKeywords(tweet);
         io.sockets.emit('new tweets', content);
     });
@@ -176,7 +176,23 @@ io.sockets.on('connection', function(socket) {
         var query = twittHandle.find(shcemaGetData(start, end));
         query.select({"keyword":1, "_id":0, "type":1, "location":1});
         query.exec(function(err, docs) {
-            socket.emit('past data', docs);
+						var data = [];
+						for (var i = 0; i < docs.length; i++) {
+								data[i] = {
+										"type": "Feature",
+										"geometry": {
+												"type": "Point",
+												"coordinates": docs[i].location
+										},
+										"properties": {
+												"text": docs[i].text,
+												"type": docs[i].type,
+												"keyword": docs[i].keyword
+										}
+								}
+						}
+
+            socket.emit('past data', data);
             //console.log(docs);
         });
     }
