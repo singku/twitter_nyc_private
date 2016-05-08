@@ -185,7 +185,7 @@ io.sockets.on('connection', function(socket) {
 												"coordinates": docs[i].location
 										},
 										"properties": {
-												"text": docs[i].text,
+												//"text": docs[i].text,
 												"type": docs[i].type,
 												"keyword": docs[i].keyword
 										}
