@@ -6,6 +6,8 @@
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.18.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.18.0/mapbox-gl.css' rel='stylesheet' />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/css/foundation.min.css">
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
@@ -15,13 +17,14 @@
 
     <!-- Latest compiled JavaScript -->
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
     <style>
         #contentWrap {
             width: 60%;
             margin-left: 50px;
             background-color: rgba(52, 152, 219, 0);
         }
-
+        
         #chat {
             background-color: rgba(52, 152, 219, 0.2);
             height: 100px;
@@ -30,21 +33,21 @@
             margin-bottom: 0px;
             margin-left: 0px;
         }
-
+        
         #chatWrap {
             float: left;
             width: 100%;
             border: 10px #000 solid;
         }
-
+        
         #trend {
             float: right;
         }
-
+        
         .error {
             color: red;
         }
-
+        
         #test {
             background-color: rgba(52, 152, 219, 0.2);
             color: black;
@@ -52,19 +55,19 @@
             top: 500px;
             right: 20px;
         }
-
+        
         #pie {
             position: absolute;
             left: 20px;
             top: 130px;
         }
-
+        
         #line {
             position: absolute;
             left: 20px;
             top: 350px;
         }
-
+        
         #map {
             position: absolute;
             top: 0;
@@ -72,7 +75,7 @@
             width: 100%;
             /*            z-index: -1;*/
         }
-
+        
         .msg {
             border: 0px solid #3498DB;
             border-radius: 5px;
@@ -84,7 +87,7 @@
             left: 0;
             right: 0;
         }
-
+        
         #keys {
             border: 0px solid #3498DB;
             border-radius: 5px;
@@ -96,7 +99,7 @@
             left: 0;
             right: 0;
         }
-
+        
         .search {
             padding: 5px 0;
             width: 230px;
@@ -106,7 +109,7 @@
             float: left;
             line-height: 22px;
         }
-
+        
         .search input {
             position: absolute;
             width: 0px;
@@ -121,13 +124,13 @@
             padding: 0 2px 0 2px;
             border-radius: 1px;
         }
-
+        
         .search:hover input,
         .search input:focus {
             width: 200px;
             margin-left: 0px;
         }
-
+        
         .btn {
             height: 30px;
             position: absolute;
@@ -165,7 +168,7 @@
 
         <div id="trend"></div>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+
         <script src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script>
@@ -241,35 +244,44 @@
                     mentionRank.sort(function (a, b) {
                         return b[1] - a[1]
                     });
-                    hashTop[0] = []; hashTop[1] = []; hashTop[2] = []; hashTop[3] = []; hashTop[4] = [];
-                    mentionTop[0] = []; mentionTop[1] = []; mentionTop[2] = []; mentionTop[3] = []; mentionTop[4] = [];
+                    hashTop[0] = [];
+                    hashTop[1] = [];
+                    hashTop[2] = [];
+                    hashTop[3] = [];
+                    hashTop[4] = [];
+                    mentionTop[0] = [];
+                    mentionTop[1] = [];
+                    mentionTop[2] = [];
+                    mentionTop[3] = [];
+                    mentionTop[4] = [];
                     for (var i = 0; i < data.length; i++) {
-                        if(data[i].properties.keyword == hashRank[0][0]) { //1st hash
+                        if (data[i].properties.keyword == hashRank[0][0]) { //1st hash
                             hashTop[0].push(data[i]);
-                        }else if(data[i].properties.keyword == hashRank[1][0]){ //2nd
+                        } else if (data[i].properties.keyword == hashRank[1][0]) { //2nd
                             hashTop[1].push(data[i]);
-                        }else if(data[i].properties.keyword == hashRank[2][0]){ //3rd
+                        } else if (data[i].properties.keyword == hashRank[2][0]) { //3rd
                             hashTop[2].push(data[i]);
-                        }else if(data[i].properties.keyword == hashRank[3][0]){ //4th
+                        } else if (data[i].properties.keyword == hashRank[3][0]) { //4th
                             hashTop[3].push(data[i]);
-                        }else if(data[i].properties.keyword == hashRank[4][0]){ //5th
+                        } else if (data[i].properties.keyword == hashRank[4][0]) { //5th
                             hashTop[4].push(data[i]);
-                        }else if(data[i].properties.keyword == mentionRank[0][0]){ //1st mention
+                        } else if (data[i].properties.keyword == mentionRank[0][0]) { //1st mention
                             mentionTop[0].push(data[i]);
-                        }else if(data[i].properties.keyword == mentionRank[1][0]){ //2nd
+                        } else if (data[i].properties.keyword == mentionRank[1][0]) { //2nd
                             mentionTop[1].push(data[i]);
-                        }else if(data[i].properties.keyword == mentionRank[2][0]){ //3rd
+                        } else if (data[i].properties.keyword == mentionRank[2][0]) { //3rd
                             mentionTop[2].push(data[i]);
-                        }else if(data[i].properties.keyword == mentionRank[3][0]){ //4th
+                        } else if (data[i].properties.keyword == mentionRank[3][0]) { //4th
                             mentionTop[3].push(data[i]);
-                        }else if(data[i].properties.keyword == mentionRank[4][0]){ //5th
+                        } else if (data[i].properties.keyword == mentionRank[4][0]) { //5th
                             mentionTop[4].push(data[i]);
-                        }else {
+                        } else {
                             restKeyword.push(data[i]);
                         }
                     }
-                    console.log(hashTop);
-                    console.log(mentionTop);
+                    console.log(manageLastData(hashTop[0]));
+                    //                    console.log(hashTop);
+                    //                    console.log(mentionTop);
                     // console.log(lastHashData);
                 });
 
@@ -319,7 +331,9 @@
 
                     map.on('style.load', function () {
                         registerTempLayer("marker_temp", "lightblue");
-
+                        registerLayer("marker_all", "yellow");
+                        registerLayer("marker_2", "pink");
+                        registerLayer("marker_3", "green");                   
                     });
                 });
 
@@ -343,14 +357,13 @@
                             , "coordinates": tweet.coord
                         }
                         , "properties": {
-                            //"text": tweet.text
-                                //                            "hashtag": tweet._id
+                            "text": tweet.text
                         }
                     }
                 }
 
                 function manageTweets(tweets) {
-                    //console.log(tweets)
+                    //                    console.log(tweets)
                     var points = tweets.map(function (tweet) {
                             return manageTweet(tweet);
 
@@ -360,45 +373,80 @@
                             "type": "FeatureCollection"
                             , "features": points
                         }
-                        //                    console.log(points);
+                        //                                            console.log(points);
                     return points;
                 }
 
-                //                function registerLayer(name) {
-                //                    map.addSource(name, {
-                //                        "type": "geojson"
-                //                        , "data": extractPoints([])
-                //                    });
-                //                    map.addLayer({
-                //                        "id": name, // "interactive": true,
-                //                        "type": "symbol"
-                //                        , "source": name
-                //                        , "layout": {
-                //                            //"icon-image": "",
-                //                            "icon-allow-overlap": true
-                //                            , "text-field": "{hashtag}"
-                //                            , "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"]
-                //                            , "text-size": 9
-                //                            , "text-transform": "uppercase"
-                //                            , "text-letter-spacing": 0.05
-                //                            , "text-offset": [0, 1.5]
-                //                        }
-                //                        , "paint": {
-                //                            "text-color": "#202"
-                //                            , "text-halo-color": "#fff"
-                //                            , "text-halo-width": 2
-                //                        }
-                //                    });
-                //                }
+
+                function manageLastData(tweets) {
+                    var points = {
+                        "type": "FeatureCollection"
+                        , "features": tweets
+                    }
+                    return points;
+                }
+
+                function registerLayer(name, color) {
+                    map.addSource(name, {
+                        "type": "geojson"
+                        , "data": manageLastData([])
+                        , cluster: true
+                        , clusterMaxZoom: 14, // Max zoom to cluster points on
+                        clusterRadius: 50
+                    });
+                    //                    map.addLayer({
+                    //                        "id": name, // "interactive": true,
+                    //                        "type": "circle"
+                    //                        , "source": name
+                    //                        , "paint": {
+                    //                            "circle-color": color
+                    //                            , "circle-radius": 5
+                    //                            , "circle-opacity": 0.5
+                    //                        }
+                    //                    });
+                    map.addLayer({
+                        "id": name
+                        , // "interactive": true,
+                        "type": "symbol"
+                        , "source": name
+                        , //        "paint": {
+                        //            "circle-color": color,
+                        //            "circle-radius": 1,
+                        //            "circle-opacity": 1
+                        //        }
+                        "layout": {
+                            //"icon-image": "",
+                            "icon-allow-overlap": false
+                            , "text-field": "{point_count}"
+                            , "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"]
+                            , "text-size": 9
+                            , "text-transform": "uppercase"
+                            , "text-letter-spacing": 0.05
+                            , "text-offset": [0, 1.5]
+                        }
+                        , "paint": {
+                            "text-color": "#202"
+                            , "text-halo-color": color
+                            , "text-halo-width": 2
+                            
+                        }
+                    });
+                }
+
+                function showPoints(tweets) {
+                    //                                hideLayer("marker_temp");
+                    ChangeLayerLastData("marker_all", tweets);
+                }
+
+                function hideLayer(layer) {
+                    ChangeLayerData(layer, []);
+                }
+
 
                 function showPoint(tweet) {
                     tweets_temp.push(tweet);
                     //                    console.log(tweets_temp);
                     ChangeLayerData("marker_temp", tweets_temp);
-                    //                    console.log(tweets_temp)
-                    //                    var cur_point = "marker_point" + point_count;
-                    //                    ++point_count;
-                    //                    registerTempLayer(cur_point, "lightblue");
                     var cur_point = "marker_point" + point_count;
                     ++point_count;
                     registerTempLayer(cur_point, "lightblue");
@@ -437,9 +485,14 @@
                     });
                 }
 
+                function ChangeLayerLastData(layer, tweets) {
+                    tweets = manageLastData(tweets);
+                    map.getSource(layer).setData(tweets);
+                }
+
                 function ChangeLayerData(layer, tweets) {
                     tweets = manageTweets(tweets);
-                    //                    console.log(tweets);
+                    //                                        console.log(tweets);
                     map.getSource(layer).setData(tweets);
                 }
 
@@ -504,6 +557,9 @@
                 function displayMsg(data) {
                     $chat.append('<span class="msg"><b>' + data.user + ': </b>' + data.text + ' ' + "</span><br/>");
                     $chat.scrollTop($chat[0].scrollHeight);
+                    showPoints(hashTop[0]);
+                    ChangeLayerLastData("marker_2", hashTop[1]);
+                    ChangeLayerLastData("marker_3", hashTop[2]);
 
                 }
 
