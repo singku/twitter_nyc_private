@@ -5,9 +5,10 @@ var express = require('express'),
     mongoose = require('mongoose'),
     twitter = require('twitter'),
     turf = require('turf'),
+    stemmer = require('porter-stemmer').stemmer,
     users = {};
 
-server.listen(3000);
+server.listen(80);
 
 var fs = require("fs");
 // read file
@@ -93,7 +94,7 @@ twittClient.stream('statuses/filter', {locations: '-74,40,-73,41'}, function(str
             var length = tweet.entities.hashtags.length;
             if(length != 0) {
                 for (var i = 0; i < length; i++) {
-                    var tag = tweet.entities.hashtags[i].text;
+                    var tag = stemmer(tweet.entities.hashtags[i].text.toLowerCase());
                     var newTwit = new twittHandle({keyword:tag.toUpperCase(), type:"hashtag", time:time, location: coord});
                     newTwit.save(function(err) {
                         if (err) throw err;
@@ -106,7 +107,7 @@ twittClient.stream('statuses/filter', {locations: '-74,40,-73,41'}, function(str
             var length = tweet.entities.user_mentions.length;
             if(length != 0) {
                 for (var i = 0; i < length; i++) {
-                    var name = tweet.entities.user_mentions[i].screen_name;
+                    var name = stemmer(tweet.entities.user_mentions[i].screen_name.toLowerCase());
                     var newTwit = new twittHandle({keyword:name.toUpperCase(), type:"mention", time:time, location: coord});
                     newTwit.save(function(err) {
                         if (err) throw err;
@@ -176,24 +177,22 @@ io.sockets.on('connection', function(socket) {
         var query = twittHandle.find(shcemaGetData(start, end));
         query.select({"keyword":1, "_id":0, "type":1, "location":1});
         query.exec(function(err, docs) {
-						var data = [];
-						for (var i = 0; i < docs.length; i++) {
-								data[i] = {
-										"type": "Feature",
-										"geometry": {
-												"type": "Point",
-												"coordinates": docs[i].location
-										},
-										"properties": {
-												//"text": docs[i].text,
-												"type": docs[i].type,
-												"keyword": docs[i].keyword
-										}
-								}
-						}
-
+            var data = [];
+            for (var i = 0; i < docs.length; i++) {
+                var tmp = {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": docs[i].location
+                    },
+                    "properties": {
+                        "type": docs[i].type,
+                        "keyword": docs[i].keyword
+                    }
+                };
+                data.push(tmp);
+            }
             socket.emit('past data', data);
-            //console.log(docs);
         });
     }
 
