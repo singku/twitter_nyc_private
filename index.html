@@ -95,7 +95,7 @@
             position: absolute;
             top: 0;
             bottom: 0;
-            width: 100%;
+            width: 70%;
             /*            z-index: -1;*/
         }
 
@@ -167,6 +167,17 @@
             top: 5px;
             border-radius: 1px;
         }
+
+        .topList {
+          background-color: white;
+          font-size: 1.2em;
+          color: black;
+          list-style-position: inside;
+          /*padding: 10px;*/
+        }
+        .ListTitle {
+          font-size: 1.5em;
+        }
     </style>
 </head>
 
@@ -175,6 +186,12 @@
     <canvas id="line" width="350" height="300"></canvas>
 
     <div id='map'></div>
+    <div style="position: absolute; right: 0; width: 30%;">
+      <div class="ListTitle">Top 10 Hashtag</div>
+      <ol id="hashTopList" class="topList"></ol>
+      <div class="ListTitle">Top 10 Mention</div>
+      <ol id="mentionTopList" class="topList"></ol>
+    </div>
     <div class="row">
         <div class="small-6 columns small-centered">
             <div class="alert alert-info" id="chat"><span>Real-Time Tweets</span>
@@ -364,6 +381,32 @@
                         } else {
                             restKeyword.push(data[i]);
                         }
+                    }
+
+                    var ul = document.getElementById("hashTopList");
+                    if(ul.childNodes.length == 0){
+                      for(var i = 0; i < hashTop.length; i ++){
+                        li = document.createElement("li");
+                        ul.appendChild(li);
+                      }
+                    }
+                    for(var i = 0; i < hashTop.length; i ++){
+                      var li = ul.childNodes[i];
+                      li.innerText = hashTop[i][0].properties.keyword + ' : ' + hashTop[i].length;
+
+                    }
+
+                    var ul = document.getElementById("mentionTopList");
+                    if(ul.childNodes.length == 0){
+                      for(var i = 0; i < mentionTop.length; i ++){
+                        li = document.createElement("li");
+                        ul.appendChild(li);
+                      }
+                    }
+                    for(var i = 0; i < mentionTop.length; i ++){
+                      var li = ul.childNodes[i];
+                      li.innerText = mentionTop[i][0].properties.keyword + ' : ' + mentionTop[i].length;
+
                     }
                     console.log(manageLastData(hashTop[0]));
                                        console.log(hashTop);
