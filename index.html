@@ -9,18 +9,18 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/css/foundation.min.css">
 
-     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
 
 
     <style>
-                .items-collection label.btn-default.active {
+        .items-collection label.btn-default.active {
             background-color: #007ba7;
             color: #FFF;
         }
-
+        
         .items-collection1 label.btn-default {
             width: 10%;
             border: 1px solid #305891;
@@ -30,24 +30,22 @@
             color: #305891;
             opacity: 0.5
         }
-
+        
         .items-collection label .itemcontent {
             width: 100%;
         }
-
+        
         .items-collection .btn-group {
             width: 100%;
             padding-left: 45px
         }
-
-
-
+        
         #contentWrap {
             width: 60%;
             margin-left: 50px;
             background-color: rgba(52, 152, 219, 0);
         }
-
+        
         #chat {
             background-color: rgba(52, 152, 219, 0.2);
             height: 100px;
@@ -56,21 +54,21 @@
             margin-bottom: 0px;
             margin-left: 0px;
         }
-
+        
         #chatWrap {
             float: left;
             width: 100%;
             border: 10px #000 solid;
         }
-
+        
         #trend {
             float: right;
         }
-
+        
         .error {
             color: red;
         }
-
+        
         #test {
             background-color: rgba(52, 152, 219, 0.2);
             color: black;
@@ -78,19 +76,19 @@
             top: 500px;
             right: 20px;
         }
-
+        
         #pie {
             position: absolute;
             left: 20px;
             top: 130px;
         }
-
+        
         #line {
             position: absolute;
             left: 20px;
             top: 350px;
         }
-
+        
         #map {
             position: absolute;
             top: 0;
@@ -98,7 +96,7 @@
             width: 70%;
             /*            z-index: -1;*/
         }
-
+        
         .msg {
             border: 0px solid #3498DB;
             border-radius: 5px;
@@ -110,7 +108,7 @@
             left: 0;
             right: 0;
         }
-
+        
         #keys {
             border: 0px solid #3498DB;
             border-radius: 5px;
@@ -122,9 +120,8 @@
             left: 0;
             right: 0;
         }
-<<<<<<< Updated upstream
-
-        .search {
+        
+        <<<<<<< Updated upstream .search {
             padding: 5px 0;
             width: 230px;
             height: 30px;
@@ -133,7 +130,7 @@
             float: left;
             line-height: 22px;
         }
-
+        
         .search input {
             position: absolute;
             width: 0px;
@@ -148,19 +145,14 @@
             padding: 0 2px 0 2px;
             border-radius: 1px;
         }
-
+        
         .search:hover input,
         .search input:focus {
             width: 200px;
             margin-left: 0px;
         }
-
-=======
         
-
-        
->>>>>>> Stashed changes
-        .btn {
+        =======>>>>>>> Stashed changes .btn {
             height: 30px;
             position: absolute;
             right: 0;
@@ -198,7 +190,7 @@
             </div>
         </div>
 
-              <div class="row">
+        <div class="row">
             <div class="form-group">
                 <div class="items-collection" id="message1">
                     <div class="items-collection1">
@@ -232,7 +224,7 @@
         </div>
         <div id="test">
             <form id="wordTrend">
-               
+
 
                 <div id="keyError"></div>
             </form>
@@ -409,8 +401,8 @@
 
                     }
                     console.log(manageLastData(hashTop[0]));
-                                       console.log(hashTop);
-                                       console.log(mentionTop);
+                    console.log(hashTop);
+                    console.log(mentionTop);
                     // console.log(lastHashData);
                 });
 
@@ -437,7 +429,7 @@
                 var tweets_temp = []; // Records data for real-time tweets
                 var map;
                 var point_count = 0;
-                var animation = [[1, 1], [30, 1], [100, 0.5], [300, 0]];
+                var animation = [[1, 0.5], [20, 1], [50, 0.5], [100, 0]];
                 //                        mapboxgl.accessToken = 'pk.eyJ1Ijoid2Vpc2hpIiwiYSI6ImNpbmc5cHV4bzFnOHJ1Zmx3ZGxpaGU0aGIifQ.L20RZ709ePgurmOeOYPwXg';
                 //                        map = new mapboxgl.Map({
                 //                            container: 'map'
@@ -463,14 +455,25 @@
                         registerLayer("marker_all", "#c84337", false, 0.9);
                         registerLayer("marker_2", "#ca7f35", false, 0.9);
                         registerLayer("marker_3", "#d9be26", false, 0.9);
-                        registerLayer("marker_4", "#5ece31", false, 0.8);
+                        registerLayer("marker_4", "#a1be41", false, 0.8);
                         registerLayer("marker_5", "#3cc382", false, 0.8);
                         registerLayer("marker_6", "#3f88bf", false, 0.8);
-                        registerLayer("marker_7", "#554fb0", false, 0.8);
-                        registerLayer("marker_8", "#5988a6", false, 0.8);
-                        registerLayer("marker_9", "#7c837d", false, 0.8);
-                        registerLayer("marker_10", "#FFF", false, 0.8);
-//                        registerLayer("restword", "white", false, 0.1);
+                        registerLayer("marker_7", "#3f88bf", false, 0.6);
+                        registerLayer("marker_8", "#3f88bf", false, 0.4);
+                        registerLayer("marker_9", "#3f88bf", false, 0.2);
+                        registerLayer("marker_10", "#3f88bf", false, 0.1);
+                        
+                        registerLayer("mention_0", "#c84337", false, 0.9);
+                        registerLayer("mention_1", "#ca7f35", false, 0.9);
+                        registerLayer("mention_2", "#d9be26", false, 0.9);
+                        registerLayer("mention_3", "#a1be41", false, 0.8);
+                        registerLayer("mention_4", "#3cc382", false, 0.8);
+                        registerLayer("mention_5", "#3f88bf", false, 0.8);
+                        registerLayer("mention_6", "#3f88bf", false, 0.6);
+                        registerLayer("mention_7", "#3f88bf", false, 0.4);
+                        registerLayer("mention_8", "#3f88bf", false, 0.2);
+                        registerLayer("mention_9", "#3f88bf", false, 0.1);
+                        //                        registerLayer("restword", "white", false, 0.1);
                     });
                 });
 
@@ -531,41 +534,41 @@
                         , clusterMaxZoom: 40, // Max zoom to cluster points on
                         clusterRadius: 50
                     });
-                                        map.addLayer({
-                                            "id": name, // "interactive": true,
-                                            "type": "circle"
-                                            , "source": name
-                                            , "paint": {
-                                                "circle-color": color
-                                                , "circle-radius": 2
-                                                , "circle-opacity": opacity
-                                            }
-                                        });
-//                    map.addLayer({
-//                        "id": name, // "interactive": true,
-//                        "type": "symbol"
-//                        , "source": name, //        "paint": {
-                        //            "circle-color": color,
-                        //            "circle-radius": 1,
-                        //            "circle-opacity": 1
-                        //        }
-//                        "layout": {
-//                            //"icon-image": "",
-//                            "icon-allow-overlap": false
-//                            , "text-field": "{keyword}"
-//                            , "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"]
-//                            , "text-size": 9
-//                            , "text-transform": "uppercase"
-//                            , "text-letter-spacing": 0.05
-//                            , "text-offset": [0, 1.5]
-//                        }
-//                        , "paint": {
-//                            "text-color": "#202"
-//                            , "text-halo-color": color
-//                            , "text-halo-width": 2
-//
-//                        }
-//                    });
+                    map.addLayer({
+                        "id": name, // "interactive": true,
+                        "type": "circle"
+                        , "source": name
+                        , "paint": {
+                            "circle-color": color
+                            , "circle-radius": 3
+                            , "circle-opacity": opacity
+                        }
+                    });
+                    //                    map.addLayer({
+                    //                        "id": name, // "interactive": true,
+                    //                        "type": "symbol"
+                    //                        , "source": name, //        "paint": {
+                    //            "circle-color": color,
+                    //            "circle-radius": 1,
+                    //            "circle-opacity": 1
+                    //        }
+                    //                        "layout": {
+                    //                            //"icon-image": "",
+                    //                            "icon-allow-overlap": false
+                    //                            , "text-field": "{keyword}"
+                    //                            , "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"]
+                    //                            , "text-size": 9
+                    //                            , "text-transform": "uppercase"
+                    //                            , "text-letter-spacing": 0.05
+                    //                            , "text-offset": [0, 1.5]
+                    //                        }
+                    //                        , "paint": {
+                    //                            "text-color": "#202"
+                    //                            , "text-halo-color": color
+                    //                            , "text-halo-width": 2
+                    //
+                    //                        }
+                    //                    });
                 }
 
                 function showPoints(tweets) {
@@ -615,7 +618,7 @@
                         , "paint": {
                             "circle-color": color
                             , "circle-radius": 1
-                            , "circle-opacity": 0.1
+                            , "circle-opacity": 0.2
                         }
                     });
                 }
@@ -702,65 +705,74 @@
                     ChangeLayerLastData("marker_8", hashTop[7]);
                     ChangeLayerLastData("marker_9", hashTop[8]);
                     ChangeLayerLastData("marker_10", hashTop[9]);
-                    console.log(hashTop[7]);
-//                    ChangeLayerLastData("restword", restKeyword);
+                    
+                    ChangeLayerLastData("mention_0", mentionTop[0]);
+                    ChangeLayerLastData("mention_1", mentionTop[1]);
+                    ChangeLayerLastData("mention_2", mentionTop[2]);
+                    ChangeLayerLastData("mention_3", mentionTop[3]);
+                    ChangeLayerLastData("mention_4", mentionTop[4]);
+                    ChangeLayerLastData("mention_5", mentionTop[5]);
+                    ChangeLayerLastData("mention_6", mentionTop[6]);
+                    ChangeLayerLastData("mention_7", mentionTop[7]);
+                    ChangeLayerLastData("mention_8", mentionTop[8]);
+                    ChangeLayerLastData("mention_9", mentionTop[9]);
+//                    console.log(hashTop[7]);
+                    //                    ChangeLayerLastData("restword", restKeyword);
 
-//                        var layers = [
-//        [150, '#FFF'],
-//        [20, '#FFF'],
-//        [0, '#FFF']
-//    ];
-//
-//    layers.forEach(function (layer, i) {
-//        map.addLayer({
-//            "id": "cluster-" + i,
-//            "type": "circle",
-//            "source": "restword",
-//            "paint": {
-//                "circle-color": layer[1],
-//                "circle-radius": 2,
-//                "circle-opacity": 0.1
-//            },
-//            "filter": i == 0 ?
-//                [">=", "point_count", layer[0]] :
-//                ["all",
-//                    [">=", "point_count", layer[0]],
-//                    ["<", "point_count", layers[i - 1][0]]]
-//        });
-//    });
+                    //                        var layers = [
+                    //        [150, '#FFF'],
+                    //        [20, '#FFF'],
+                    //        [0, '#FFF']
+                    //    ];
+                    //
+                    //    layers.forEach(function (layer, i) {
+                    //        map.addLayer({
+                    //            "id": "cluster-" + i,
+                    //            "type": "circle",
+                    //            "source": "restword",
+                    //            "paint": {
+                    //                "circle-color": layer[1],
+                    //                "circle-radius": 2,
+                    //                "circle-opacity": 0.1
+                    //            },
+                    //            "filter": i == 0 ?
+                    //                [">=", "point_count", layer[0]] :
+                    //                ["all",
+                    //                    [">=", "point_count", layer[0]],
+                    //                    ["<", "point_count", layers[i - 1][0]]]
+                    //        });
+                    //    });
 
-    // Add a layer for the clusters' count labels
-//    map.addLayer({
-//        "id": "cluster-count",
-//        "type": "symbol",
-//        "source": "restword",
-//        "layout": {
-//            "text-field": "{point_count}",
-//            "text-font": [
-//                    "DIN Offc Pro Medium",
-//                    "Arial Unicode MS Bold"
-//                ],
-//            "text-size": 6
-//        }
-//    });
+                    // Add a layer for the clusters' count labels
+                    //    map.addLayer({
+                    //        "id": "cluster-count",
+                    //        "type": "symbol",
+                    //        "source": "restword",
+                    //        "layout": {
+                    //            "text-field": "{point_count}",
+                    //            "text-font": [
+                    //                    "DIN Offc Pro Medium",
+                    //                    "Arial Unicode MS Bold"
+                    //                ],
+                    //            "text-size": 6
+                    //        }
+                    //    });
 
                 }
- $("#message1 label.btn").on("click", function () {
-     console.log($(this).attr('id'));
-     if($(this).attr('id') == 1) {
-             hideLayer("marker_3");
-            hideLayer("marker_2");
-//             hideLayer("restword");
-         }
-         if($(this).attr('id') == 2) {
-             hideLayer("marker_3");
-            hideLayer("marker_all");
-//             hideLayer("restword");
-         }
+                $("#message1 label.btn").on("click", function () {
+                    console.log($(this).attr('id'));
+                    if ($(this).attr('id') == 1) {
+                        map.setLayoutProperty("marker_all", 'visibility', 'none');
+                        //             hideLayer("restword");
+                    }
+                    if ($(this).attr('id') == 2) {
+                        map.setLayoutProperty("marker_all", 'visibility', 'visible');
+                        //             hideLayer("restword");
+                    }
 
-        //        message += $(this).attr('id');
-        //        console.log(message);
-    });
+                    //        message += $(this).attr('id');
+                    //        console.log(message);
+                });
 
             });
         </script>
