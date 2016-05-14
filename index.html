@@ -22,7 +22,7 @@
             color: #FFF;
             height: 100px;
             width: 40%;
-            margin-left: 200px;
+            left: 20%;
         }
         
         #map {
@@ -34,35 +34,36 @@
         
         button.btn-default:focus {
             border: none;
-            color: #5592aa;
-            background-color: rgba(52, 152, 219, 0);
+            color: #FFF;
+            background-color: #5592aa;
             outline: 0;
         }
         
         button.btn-default:hover {
             border: none;
-            color: #5592aa;
-            background-color: rgba(52, 152, 219, 0);
+            color: #FFF;
+            background-color: #5592aa;
         }
         
         button.btn-default {
             background-color: rgba(52, 152, 219, 0);
             border: none;
-            color: #FFF;
-            padding-left: 20px;
+            color: #5592aa;
+            width: 100px;
+            
         }
         
         #hash:active {
             border: none;
-            color: #5592aa;
-            background-color: rgba(52, 152, 219, 0);
+            color: #FFF;
+            background-color: #5592aa;
             outline: 0;
         }
         
         #mention:active {
             border: none;
-            color: #5592aa;
-            background-color: rgba(52, 152, 219, 0);
+            color: #FFF;
+            background-color: #5592aa;
             outline: 0;
         }
         
@@ -78,6 +79,7 @@
     .navbar-default {
         background-color: #5592aa;
         color: #FFF;
+        margin-bottom: 0;
     }
     </style>
 </head>
@@ -98,14 +100,14 @@
     <i id="refresh" class="fa fa-refresh fa-2x" aria-hidden="true" style="position:absolute;"></i>
 
     <div style="position: absolute; right: 0; width: 21%;">
-        <div id="lists">
+<!--        <div id="lists">-->
             <div class=" panel panel-default">
-                <div class="panel-heading" style="background-color:#dd9822">
+                <div class="panel-heading" style="background-color:rgba(121, 134, 134, 0.2); ">
                     <div class="row">
                         <center>
                             <div class="btn-group" id="title">
-                                <button class="btn btn-default" id="hash" onclick="updateHash()">Hashtag</button>
-                                <button class="btn btn-default" id="mention" onclick="updateMention()">Mentioned</button>
+                                <button class="btn btn-default" id="hash" onclick="updateHash()"><strong><i class="fa fa-hashtag" aria-hidden="true"></i>Hash</strong></button>
+                                <button class="btn btn-default" id="mention" onclick="updateMention()"><strong><i class="fa fa-at" aria-hidden="true"></i>Mention</strong></button>
                             </div>
                         </center>
                     </div>
@@ -118,7 +120,7 @@
                     </ul>
                 </div>
             </div>
-        </div>
+<!--        </div>-->
     </div>
 
     <div class='row'>
@@ -146,16 +148,36 @@
                 //here you try to ask the user position then setView to map
                 map.on('style.load', function () {
                     registerTempLayer("marker_temp", "lightblue");
-                    registerLayer("marker_0", "#c84337", false, 0.9, 3);
-                    registerLayer("marker_1", "#ce316b", false, 0.9, 3);
-                    registerLayer("marker_2", "#e88617", false, 0.9, 3);
-                    registerLayer("marker_3", "#ddbe22", false, 0.8, 3);
-                    registerLayer("marker_4", "#cdd926", false, 0.8, 3);
-                    registerLayer("marker_5", "#a1be41", false, 0.8, 3);
-                    registerLayer("marker_6", "#47bc43", false, 0.6, 3);
-                    registerLayer("marker_7", "#25c8da", false, 0.4, 3);
-                    registerLayer("marker_8", "#3f88bf", false, 0.2, 3);
-                    registerLayer("marker_9", "#474fb8", false, 0.1, 3);
+//                    registerLayer("marker_0", "#c84337", false, 0.9, 3);
+//                    registerLayer("marker_1", "#ce316b", false, 0.9, 3);
+//                    registerLayer("marker_2", "#e88617", false, 0.9, 3);
+//                    registerLayer("marker_3", "#ddbe22", false, 0.8, 3);
+//                    registerLayer("marker_4", "#cdd926", false, 0.8, 3);
+//                    registerLayer("marker_5", "#a1be41", false, 0.8, 3);
+//                    registerLayer("marker_6", "#47bc43", false, 0.6, 3);
+//                    registerLayer("marker_7", "#25c8da", false, 0.4, 3);
+//                    registerLayer("marker_8", "#3f88bf", false, 0.2, 3);
+//                    registerLayer("marker_9", "#474fb8", false, 0.1, 3);
+//                    registerLayer("marker_0", "#ab5754", false, 0.9, 3);
+//                    registerLayer("marker_1", "#AD1457", false, 0.9, 3);
+//                    registerLayer("marker_2", "#C2185B", false, 0.9, 3);
+//                    registerLayer("marker_3", "#D81B60", false, 0.8, 3);
+//                    registerLayer("marker_4", "#E91E63", false, 0.8, 3);
+//                    registerLayer("marker_5", "#EC407A", false, 0.8, 3);
+//                    registerLayer("marker_6", "#F06292", false, 0.6, 3);
+//                    registerLayer("marker_7", "#F48FB1", false, 0.4, 3);
+//                    registerLayer("marker_8", "#F8BBD0", false, 0.2, 3);
+//                    registerLayer("marker_9", "#FCE4EC", false, 0.1, 3);
+                        registerLayer("marker_0", "#b54a4a", false, 0.9, 3);
+                    registerLayer("marker_1", "#b4704b", false, 0.9, 3);
+                    registerLayer("marker_2", "#b4964b", false, 0.9, 3);
+                    registerLayer("marker_3", "#8fba45", false, 0.8, 3);
+                    registerLayer("marker_4", "#5bb946", false, 0.8, 3);
+                    registerLayer("marker_5", "#4bb470", false, 0.8, 3);
+                    registerLayer("marker_6", "#4cafb3", false, 0.6, 3);
+                    registerLayer("marker_7", "#4894b7", false, 0.4, 3);
+                    registerLayer("marker_8", "#5475ab", false, 0.2, 3);
+                    registerLayer("marker_9", "#6353ac", false, 0.1, 3);
 
                     registerLayer("mention_0", "#c84337", false, 0.9, 3);
                     registerLayer("mention_1", "#ce316b", false, 0.9, 3);
