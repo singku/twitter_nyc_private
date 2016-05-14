@@ -11,7 +11,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
-    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+<!--    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">-->
 
     <style>
         .items-collection label.btn-default.active {
@@ -57,13 +57,13 @@
 
         button.btn-default:focus{
             border: none;
-            color: #c7b938;
+            color: #ce7f31;
             background-color: rgba(52, 152, 219, 0);
             outline: 0;
         }
         button.btn-default:hover{
             border: none;
-          color: #c7b938;
+          color: #ce7f31;
             background-color: rgba(52, 152, 219, 0);
         
         }
@@ -465,6 +465,16 @@
                     }
                 }
             });
+             $("#refresh").on("click", function (){
+                  for (var i = 0; i < 10; i++) {
+                        var layer = "marker_" + i;
+                        map.setLayoutProperty(layer, 'visibility', 'visible');
+                    }
+                    for (var i = 0; i < 10; i++) {
+                        var layer = "mention_" + i;
+                        map.setLayoutProperty(layer, 'visibility', 'visible');
+                    }
+             });
         });
     </script>
 </body>
