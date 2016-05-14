@@ -21,7 +21,7 @@
             background-color: #007ba7;
             color: #FFF;
         }
-
+        
         .items-collection1 label.btn-default {
             width: 10%;
             border: 1px solid #305891;
@@ -31,16 +31,16 @@
             color: #305891;
             opacity: 0.5
         }
-
+        
         .items-collection label .itemcontent {
             width: 100%;
         }
-
+        
         .items-collection .btn-group {
             width: 100%;
             padding-left: 45px
         }
-
+        
         #tweetsbox {
             position: absolute;
             top: 0;
@@ -51,40 +51,23 @@
             /*            margin-bottom: 0px;*/
             margin-left: 20px;
         }
-
+        
         #map {
             position: absolute;
             top: 0;
             bottom: 0;
             width: 79%;
         }
-           .btn {
-        background-color: rgba(52, 152, 219, 0);
-        border: none;
-        color: #FFF;
-    }
-        /*
+        
         .btn {
-            height: 30px;
-            position: absolute;
-            right: 0;
-            top: 5px;
-            border-radius: 1px;
+            background-color: rgba(52, 152, 219, 0);
+            border: none;
+            color: #FFF;
         }
-*/
-
-/*
-        .topList {
-            background-color: white;
-            font-size: 1.2em;
-            color: black;
-            list-style-position: inside;
+        
+        li {
+            border-bottom: 1px solid #ccc;
         }
-
-        .ListTitle {
-            font-size: 1.5em;
-        }
-*/
     </style>
 </head>
 
@@ -99,25 +82,28 @@
             <div class=" panel panel-default">
                 <div class="panel-heading" style="background-color:#5592aa">
                     <div class="row">
+
                         <div class="btn-group">
-                            <button class="btn btn-default" onclick="hash()">Hashtag</a>
-                            <button class="btn btn-default" onclick="mention()">Mentioned</a>
+                            <button class="btn btn-default" onclick="hash()">Hashtag</button>
+                            <button class="btn btn-default" onclick="mention()">Mentioned</button>
+
                         </div>
                     </div>
                 </div>
+           
                 <div class="panel-body">
-                    <ul class="list-group">
-<!--                                <div class="ListTitle">Top 10 Hashtag</div>-->
-        <ol id="hashTopList" class="topList"></ol>
-<!--        <div class="ListTitle">Top 10 Mention</div>-->
-        <ol id="mentionTopList" class="topList"></ol>
+                    <ul class="list-group" id="ranking">
+                        <!--                                <div class="ListTitle">Top 10 Hashtag</div>-->
+                        <ol id="hashTopList" class="topList"></ol>
+                        <!--        <div class="ListTitle">Top 10 Mention</div>-->
+                        <ol id="mentionTopList" class="topList"></ol>
 
                     </ul>
                 </div>
             </div>
         </div>
 
-<!--
+        <!--
         <div class="ListTitle">Top 10 Hashtag</div>
         <ol id="hashTopList" class="topList"></ol>
         <div class="ListTitle">Top 10 Mention</div>
@@ -131,7 +117,7 @@
 
         </div>
 
-<!--
+        <!--
         <div class="form-group">
             <div class="items-collection" id="message1">
                 <div class="items-collection1">
@@ -217,8 +203,19 @@
             var iterator = 0;
             var topKey = new Map();
 
+<<<<<<< Updated upstream
 
 
+=======
+            var hashRank = []; //descending sorted array with every element like [key, value] (sorted by value)
+            var mentionRank = []; //descending sorted array ...
+            var lastHashData = new Map(); // [key,value] value is set of coords
+            var lastMentionData = new Map();
+            var hashTop = [];
+            var mentionTop = [];
+            var restKeyword = [];
+            var listColor = ["#c84337", "#ca7f35", "#d9be26", "#a1be41", "#3cc382", "#3f88bf", "#3f88bf", "#3f88bf", "#3f88bf", "#3f88bf", ];
+>>>>>>> Stashed changes
 
             socket.on('past data', function (data) {
                 var hashRankNsort = {};
@@ -627,17 +624,27 @@
                 //    });
 
             }
-            $("#message1 label.btn").on("click", function () {
-                //				console.log($(this).attr('id'));
-                if ($(this).attr('id') == 1) {
-                    map.setLayoutProperty("marker_all", 'visibility', 'none');
-                    //             hideLayer("restword");
-                }
-                if ($(this).attr('id') == 2) {
-                    map.setLayoutProperty("marker_all", 'visibility', 'visible');
-                    //             hideLayer("restword");
-                }
-            });
+            //            $("#message1 label.btn").on("click", function () {
+            //                //				console.log($(this).attr('id'));
+            //                if ($(this).attr('id') == 1) {
+            //                    map.setLayoutProperty("marker_all", 'visibility', 'none');
+            //                    //             hideLayer("restword");
+            //                }
+            //                if ($(this).attr('id') == 2) {
+            //                    map.setLayoutProperty("marker_all", 'visibility', 'visible');
+            //                    //             hideLayer("restword");
+            //                }
+            //            });
+            function getEventTarget(e) {
+                e = e || window.event;
+                return e.target || e.srcElement;
+            }
+            var ul = document.getElementById('ranking');
+            ul.onclick = function (event) {
+                var target = getEventTarget(event);
+                console.log(target);
+                alert(target.innerHTML);
+            };
 
         });
     </script>
