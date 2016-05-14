@@ -11,6 +11,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
 
     <style>
         .items-collection label.btn-default.active {
@@ -44,7 +45,7 @@
             color: #FFF;
             height: 100px;
             width: 500px;
-            margin-left: 20px;
+            margin-left: 200px;
         }
         
         #map {
@@ -53,13 +54,48 @@
             bottom: 0;
             width: 79%;
         }
+
+        button.btn-default:focus{
+            border: none;
+            color: #c7b938;
+            background-color: rgba(52, 152, 219, 0);
+            outline: 0;
+        }
+        button.btn-default:hover{
+            border: none;
+          color: #c7b938;
+            background-color: rgba(52, 152, 219, 0);
         
-        .btn {
+        }
+
+        button.btn-default {
             background-color: rgba(52, 152, 219, 0);
             border: none;
             color: #FFF;
+            padding-left: 20px;
         }
-        
+/*
+        #title button.btn-default.active {
+            color: #c7b938;
+            background-color: red;
+        }
+*/
+        #hash:active {
+            border: none;
+          color: #c7b938;
+            background-color: rgba(52, 152, 219, 0);
+            outline: 0;
+        }
+        #mention:active {
+            border: none;
+          color: #c7b938;
+            background-color: rgba(52, 152, 219, 0);
+            outline: 0;
+        }
+        #refresh{
+            color: #FFF;
+            margin:20px;
+        }
         li {
             border-bottom: 1px solid #ccc;
         }
@@ -68,18 +104,19 @@
 
 <body>
 
-    <div id='map'></div>
+    <div id='map'></div><i id="refresh" class="fa fa-refresh fa-2x" aria-hidden="true" style="position:absolute;"></i>
     <div style="position: absolute; right: 0; width: 21%;">
         <div id="lists">
             <div class=" panel panel-default">
                 <div class="panel-heading" style="background-color:#5592aa">
                     <div class="row">
-
+                        <center>
                         <div class="btn-group" id="title">
                             <button class="btn btn-default" id="hash" onclick="hash()">Hashtag</button>
                             <button class="btn btn-default" id="mention" onclick="mention()">Mentioned</button>
 
                         </div>
+                            </center>
                     </div>
                 </div>
 
@@ -95,6 +132,7 @@
 
     <div class='row'>
         <div class="alert alert-info" id="tweetsbox"><span>Real-Time Tweets</span></div>
+        
     </div>
 
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
