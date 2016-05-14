@@ -321,35 +321,18 @@
                         restKeyword.push(data[i]);
                     }
                 }
-                // function hash() {
-                //     var ul = document.getElementById("hashTopList");
-                //     if (ul.childNodes.length == 0) {
-                //         for (var i = 0; i < hashTop.length; i++) {
-                //             li = document.createElement("li");
-                //             ul.appendChild(li);
-                //         }
-                //     }
-                //     for (var i = 0; i < hashTop.length; i++) {
-                //         var li = ul.childNodes[i];
-                //         li.innerText = hashTop[i][0].properties.keyword + ' : ' + hashTop[i].length;
-                //         li.style.color = listColor[i];
-                //     }
-                // }
-                //
-                //
-                // var ul = document.getElementById("mentionTopList");
-                // if (ul.childNodes.length == 0) {
-                //     for (var i = 0; i < mentionTop.length; i++) {
-                //         li = document.createElement("li");
-                //         ul.appendChild(li);
-                //     }
-                // }
-                // for (var i = 0; i < mentionTop.length; i++) {
-                //     var li = ul.childNodes[i];
-                //     li.innerText = mentionTop[i][0].properties.keyword + ' : ' + mentionTop[i].length;
-                //     li.style.color = listColor[i];
-                //
-                // }
+                     var ul = document.getElementById("hashTopList");
+                     if (ul.childNodes.length == 0) {
+                         for (var i = 0; i < hashTop.length; i++) {
+                             li = document.createElement("li");
+                             ul.appendChild(li);
+                         }
+                     }
+                     for (var i = 0; i < hashTop.length; i++) {
+                         var li = ul.childNodes[i];
+                         li.innerText = hashTop[i][0].properties.keyword + ' : ' + hashTop[i].length;
+                         li.style.color = listColor[i];
+                     }
                 setData();
             });
 
