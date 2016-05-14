@@ -100,8 +100,8 @@
                 <div class="panel-heading" style="background-color:#5592aa">
                     <div class="row">
                         <div class="btn-group">
-                            <a class="btn btn-default">Hashtag</a>
-                            <a class="btn btn-default">Mentioned</a>
+                            <button class="btn btn-default" onclick="hash()">Hashtag</a>
+                            <button class="btn btn-default" onclick="mention()">Mentioned</a>
                         </div>
                     </div>
                 </div>
@@ -164,7 +164,51 @@
 
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <script>
+        var hashRank = []; //descending sorted array with every element like [key, value] (sorted by value)
+        var mentionRank = []; //descending sorted array ...
+        var lastHashData = new Map(); // [key,value] value is set of coords
+        var lastMentionData = new Map();
+        var hashTop = [];
+        var mentionTop = [];
+        var restKeyword = [];
+        var listColor = ["#c84337", "#ca7f35", "#d9be26", "#a1be41", "#3cc382", "#3f88bf", "#3f88bf", "#3f88bf", "#3f88bf", "#3f88bf",];
+
+        function hash() {
+            var ul = document.getElementById("hashTopList");
+            $('#mentionTopList > li').remove();
+            $('#hashTopList > li').remove();
+            if (ul.childNodes.length == 0) {
+                for (var i = 0; i < hashTop.length; i++) {
+                    li = document.createElement("li");
+                    ul.appendChild(li);
+                }
+            }
+            for (var i = 0; i < hashTop.length; i++) {
+                var li = ul.childNodes[i];
+                li.innerText = hashTop[i][0].properties.keyword + ' : ' + hashTop[i].length;
+                li.style.color = listColor[i];
+            }
+        }
+
+        function mention() {
+            var ul = document.getElementById("mentionTopList");
+            $('#mentionTopList > li').remove();
+            $('#hashTopList > li').remove();
+            if (ul.childNodes.length == 0) {
+                for (var i = 0; i < mentionTop.length; i++) {
+                    li = document.createElement("li");
+                    ul.appendChild(li);
+                }
+            }
+            for (var i = 0; i < mentionTop.length; i++) {
+                var li = ul.childNodes[i];
+                li.innerText = mentionTop[i][0].properties.keyword + ' : ' + mentionTop[i].length;
+                li.style.color = listColor[i];
+
+            }
+        }
         jQuery(function ($) {
             var socket = io.connect();
             var $tweetsbox = $('#tweetsbox');
@@ -173,14 +217,8 @@
             var iterator = 0;
             var topKey = new Map();
 
-            var hashRank = []; //descending sorted array with every element like [key, value] (sorted by value)
-            var mentionRank = []; //descending sorted array ...
-            var lastHashData = new Map(); // [key,value] value is set of coords
-            var lastMentionData = new Map();
-            var hashTop = [];
-            var mentionTop = [];
-            var restKeyword = [];
-            var listColor = ["#c84337", "#ca7f35", "#d9be26", "#a1be41", "#3cc382", "#3f88bf", "#3f88bf", "#3f88bf", "#3f88bf", "#3f88bf",];
+
+
 
             socket.on('past data', function (data) {
                 var hashRankNsort = {};
@@ -299,33 +337,35 @@
                         restKeyword.push(data[i]);
                     }
                 }
-
-                var ul = document.getElementById("hashTopList");
-                if (ul.childNodes.length == 0) {
-                    for (var i = 0; i < hashTop.length; i++) {
-                        li = document.createElement("li");
-                        ul.appendChild(li);
-                    }
-                }
-                for (var i = 0; i < hashTop.length; i++) {
-                    var li = ul.childNodes[i];
-                    li.innerText = hashTop[i][0].properties.keyword + ' : ' + hashTop[i].length;
-                    li.style.color = listColor[i];
-                }
-
-                var ul = document.getElementById("mentionTopList");
-                if (ul.childNodes.length == 0) {
-                    for (var i = 0; i < mentionTop.length; i++) {
-                        li = document.createElement("li");
-                        ul.appendChild(li);
-                    }
-                }
-                for (var i = 0; i < mentionTop.length; i++) {
-                    var li = ul.childNodes[i];
-                    li.innerText = mentionTop[i][0].properties.keyword + ' : ' + mentionTop[i].length;
-                    li.style.color = listColor[i];
-
-                }
+                // function hash() {
+                //     var ul = document.getElementById("hashTopList");
+                //     if (ul.childNodes.length == 0) {
+                //         for (var i = 0; i < hashTop.length; i++) {
+                //             li = document.createElement("li");
+                //             ul.appendChild(li);
+                //         }
+                //     }
+                //     for (var i = 0; i < hashTop.length; i++) {
+                //         var li = ul.childNodes[i];
+                //         li.innerText = hashTop[i][0].properties.keyword + ' : ' + hashTop[i].length;
+                //         li.style.color = listColor[i];
+                //     }
+                // }
+                //
+                //
+                // var ul = document.getElementById("mentionTopList");
+                // if (ul.childNodes.length == 0) {
+                //     for (var i = 0; i < mentionTop.length; i++) {
+                //         li = document.createElement("li");
+                //         ul.appendChild(li);
+                //     }
+                // }
+                // for (var i = 0; i < mentionTop.length; i++) {
+                //     var li = ul.childNodes[i];
+                //     li.innerText = mentionTop[i][0].properties.keyword + ' : ' + mentionTop[i].length;
+                //     li.style.color = listColor[i];
+                //
+                // }
                 setData();
             });
 
