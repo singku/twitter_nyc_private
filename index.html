@@ -21,7 +21,7 @@
             background-color: #007ba7;
             color: #FFF;
         }
-        
+
         .items-collection1 label.btn-default {
             width: 10%;
             border: 1px solid #305891;
@@ -31,16 +31,16 @@
             color: #305891;
             opacity: 0.5
         }
-        
+
         .items-collection label .itemcontent {
             width: 100%;
         }
-        
+
         .items-collection .btn-group {
             width: 100%;
             padding-left: 45px
         }
-        
+
         #tweetsbox {
             position: absolute;
             top: 0;
@@ -51,7 +51,7 @@
             /*            margin-bottom: 0px;*/
             margin-left: 20px;
         }
-        
+
         #map {
             position: absolute;
             top: 0;
@@ -72,7 +72,7 @@
             border-radius: 1px;
         }
 */
-        
+
 /*
         .topList {
             background-color: white;
@@ -80,7 +80,7 @@
             color: black;
             list-style-position: inside;
         }
-        
+
         .ListTitle {
             font-size: 1.5em;
         }
@@ -180,6 +180,7 @@
             var hashTop = [];
             var mentionTop = [];
             var restKeyword = [];
+            var listColor = ["#c84337", "#ca7f35", "#d9be26", "#a1be41", "#3cc382", "#3f88bf", "#3f88bf", "#3f88bf", "#3f88bf", "#3f88bf",];
 
             socket.on('past data', function (data) {
                 var hashRankNsort = {};
@@ -309,6 +310,7 @@
                 for (var i = 0; i < hashTop.length; i++) {
                     var li = ul.childNodes[i];
                     li.innerText = hashTop[i][0].properties.keyword + ' : ' + hashTop[i].length;
+                    li.style.color = listColor[i];
                 }
 
                 var ul = document.getElementById("mentionTopList");
@@ -321,6 +323,7 @@
                 for (var i = 0; i < mentionTop.length; i++) {
                     var li = ul.childNodes[i];
                     li.innerText = mentionTop[i][0].properties.keyword + ' : ' + mentionTop[i].length;
+                    li.style.color = listColor[i];
 
                 }
                 setData();
