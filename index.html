@@ -5,8 +5,6 @@
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.18.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.18.0/mapbox-gl.css' rel='stylesheet' />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/css/foundation.min.css">
 
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
@@ -39,36 +37,29 @@
         }
         
         #tweetsbox {
+			position: absolute;
 			top: 0;
             background-color: rgba(52, 152, 219, 0.2);
+			color: #FFF;
             height: 100px;
-            margin-bottom: 0px;
-            margin-left: 0px;
+            width: 500px;
+            margin-left: 20px;
         }
         
         #map {
             position: absolute;
             top: 0;
             bottom: 0;
-            width: 70%;
+            width: 79%;
         }
 
         .btn {
-            height: 30px;
-            position: absolute;
-            right: 0;
-            top: 5px;
-            border-radius: 1px;
+            background-color: rgba(52, 152, 219, 0);
+            border: none;
+            color: #FFF;
         }
-
-        .topList {
-          background-color: white;
-          font-size: 1.2em;
-          color: black;
-          list-style-position: inside;
-        }
-        .ListTitle {
-          font-size: 1.5em;
+        li {
+            border-bottom: 1px solid #ccc;
         }
     </style>
 </head>
@@ -76,61 +67,84 @@
 <body>
 
     <div id='map'></div>
-    <div style="position: absolute; right: 0; width: 30%;">
-      <div class="ListTitle">Top 10 Hashtag</div>
-      <ol id="hashTopList" class="topList"></ol>
-      <div class="ListTitle">Top 10 Mention</div>
-      <ol id="mentionTopList" class="topList"></ol>
-    </div>
-	
-	<div class='row'>
-		<div class="small-6 columns small-centered">
-			<div class="alert alert-info" id="tweetsbox"><span>Real-Time Tweets</span>
-			</div>
-		</div>
+	<div style="position: absolute; right: 0; width: 21%;">
+		<div id="lists">
+		<div class=" panel panel-default">
+			<div class="panel-heading" style="background-color:#5592aa">
+				<div class="row">
 
-		<div class="form-group">
-			<div class="items-collection" id="message1">
-				<div class="items-collection1">
-					<div data-toggle="buttons" class="btn-group ">
-						<label class="btn btn-default col-xs-2 col-sm-4 col-md-3 col-lg-3 " id="1">
-							<div class="itemcontent">
-								<input type="radio" name="options" id="option1" autocomplete="off">Hashtop1
-							</div>
-						</label>
+					<div class="btn-group">
+						<button class="btn btn-default" onclick="hash()">Hashtag</button>
+						<button class="btn btn-default" onclick="mention()">Mentioned</button>
 
-						<label class="btn btn-default col-xs-2 col-sm-4 col-md-3 col-lg-3" id="2">
-							<div class="itemcontent">
-								<input type="radio" name="options" id="option2" autocomplete="off">top2
-
-							</div>
-						</label>
-
-						<label class="btn btn-default col-xs-2 col-sm-4 col-md-3 col-lg-3" id="3">
-							<div class="itemcontent">
-								<input type="radio" name="options" id="option3" autocomplete="off">top3
-
-							</div>
-						</label>
 					</div>
 				</div>
 			</div>
+	   
+			<div class="panel-body">
+				<ul class="list-group" id="ranking">
+					<ol id="hashTopList" class="topList"></ol>
+					<ol id="mentionTopList" class="topList"></ol>
+				</ul>
+			</div>
 		</div>
+	</div>
+	</div>
+	
+	<div class='row'>
+		<div class="alert alert-info" id="tweetsbox"><span>Real-Time Tweets</span></div>
 	</div>
 	
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
+		var hashRank = []; //descending sorted array with every element like [key, value] (sorted by value)
+		var mentionRank = []; //descending sorted array ...
+		var lastHashData = new Map(); // [key,value] value is set of coords
+		var lastMentionData = new Map();
+		var listColor = ["#c84337", "#ca7f35", "#d9be26", "#a1be41", "#3cc382", "#3f88bf", "#3f88bf", "#3f88bf", "#3f88bf", "#3f88bf"];
+		function hash() {
+			var ul = document.getElementById("hashTopList");
+			$('#mentionTopList > li').remove();
+			$('#hashTopList > li').remove();
+
+			if(ul.childNodes.length == 0){
+			  for(var i = 0; i < hashRank.length && i < 10; i++) {
+				li = document.createElement("li");
+				ul.appendChild(li);
+			  }
+			}
+			for(var i = 0; i < hashRank.length && i < 10; i++) {
+			  var li = ul.childNodes[i];
+			  li.innerText = hashRank[i][0] + ' : ' + hashRank[i][1];
+			  li.style.color = listColor[i];
+			}
+		}
+		
+		function mention() {
+			var ul = document.getElementById("mentionTopList");
+			$('#mentionTopList > li').remove();
+			$('#hashTopList > li').remove();
+			if(ul.childNodes.length == 0){
+			  for(var i = 0; i < mentionRank.length && i < 10; i++){
+				li = document.createElement("li");
+				ul.appendChild(li);
+			  }
+			}
+			for(var i = 0; i < mentionRank.length && i < 10; i ++){
+			  var li = ul.childNodes[i];
+			  li.innerText = mentionRank[i][0] + ' : ' + mentionRank[i][1];
+			  li.style.color =  listColor[i];
+			}
+		}
+		
 		jQuery(function ($) {
             //Global variables
 			var socket = io.connect();
 			var $tweetsbox = $('#tweetsbox');
-			var hashRank = []; //descending sorted array with every element like [key, value] (sorted by value)
-			var mentionRank = []; //descending sorted array ...
-			var lastHashData = new Map(); // [key,value] value is set of coords
-			var lastMentionData = new Map();
 
             //functions definition
+
 			function genGeoTweet(tweet) {
 				return {
 					"type": "Feature", 
@@ -320,30 +334,7 @@
 				mentionRank.sort(function (a, b) {
 					return b[1] - a[1]
 				});
-
-				var ul = document.getElementById("hashTopList");
-				if(ul.childNodes.length == 0){
-				  for(var i = 0; i < hashRank.length && i < 10; i++) {
-					li = document.createElement("li");
-					ul.appendChild(li);
-				  }
-				}
-				for(var i = 0; i < hashRank.length && i < 10; i++) {
-				  var li = ul.childNodes[i];
-				  li.innerText = hashRank[i][0] + ' : ' + hashRank[i][1];
-				}
-
-				var ul = document.getElementById("mentionTopList");
-				if(ul.childNodes.length == 0){
-				  for(var i = 0; i < mentionRank.length && i < 10; i++){
-					li = document.createElement("li");
-					ul.appendChild(li);
-				  }
-				}
-				for(var i = 0; i < mentionRank.length && i < 10; i ++){
-				  var li = ul.childNodes[i];
-				  li.innerText = mentionRank[i][0] + ' : ' + mentionRank[i][1];
-				}
+				hash();
 				serveData();
 			});
 
