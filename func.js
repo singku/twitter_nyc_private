@@ -2,45 +2,29 @@ var hashRank = []; //descending sorted array with every element like [key, value
 var mentionRank = []; //descending sorted array ...
 var lastHashData = new Map(); // [key,value] value is set of coords
 var lastMentionData = new Map();
-var listColor = ["#c84337", "#ca7f35", "#d9be26", "#a1be41", "#3cc382", "#3f88bf", "#3f88bf", "#3f88bf", "#3f88bf", "#3f88bf"];
+var listColor = ["#c84337", "#ce316b", "#e88617", "#ddbe22", "#cdd926", "#a1be41", "#47bc43", "#25c8da", "#3f88bf", "#474fb8"];
 var tweets_temp = []; // Records data for real-time tweets
 var map;
 var point_count = 0;
-var animation = [[1, 0.5], [20, 1], [50, 0.5], [100, 0]];
+var animation = [[1, 0.5], [20, 0.8], [50, 0.4], [75, 0]];
 
 function updateHash() {
-	var ul = document.getElementById("hashTopList");
-	$('#mentionTopList > li').remove();
-	$('#hashTopList > li').remove();
-
-	if(ul.childNodes.length == 0){
-	  for(var i = 0; i < hashRank.length && i < 10; i++) {
-		li = document.createElement("li");
-		ul.appendChild(li);
-	  }
-	}
-	for(var i = 0; i < hashRank.length && i < 10; i++) {
-	  var li = ul.childNodes[i];
-	  li.innerText = hashRank[i][0] + ' : ' + hashRank[i][1];
-	  li.style.color = listColor[i];
-	}
+            $('#ranking').empty();
+               var list = $('<ul/>').appendTo('#ranking');
+            for (var i = 0;i < 10; i++) {
+                // New <li> elements are created here and added to the <ul> element.
+                list.append('<div class="row"><div class="progress"><div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:'+hashRank[i][1]/(hashRank[0][1]+5)*100+'%; background-color:'+listColor[i]+';">'+hashRank[i][0]+Math.round(hashRank[i][1]/(hashRank[0][1]+5)*100)+'%</div></div></div>');
+            };
 }
 
 function updateMention() {
-	var ul = document.getElementById("mentionTopList");
-	$('#mentionTopList > li').remove();
-	$('#hashTopList > li').remove();
-	if(ul.childNodes.length == 0){
-	  for(var i = 0; i < mentionRank.length && i < 10; i++){
-		li = document.createElement("li");
-		ul.appendChild(li);
-	  }
-	}
-	for(var i = 0; i < mentionRank.length && i < 10; i ++){
-	  var li = ul.childNodes[i];
-	  li.innerText = mentionRank[i][0] + ' : ' + mentionRank[i][1];
-	  li.style.color =  listColor[i];
-	}
+        $('#ranking').empty();
+               var list = $('<ul/>').appendTo('#ranking');
+            for (var i = 0;i < 10; i++) {
+                // New <li> elements are created here and added to the <ul> element.
+                list.append('<div class="row"><div class="progress"><div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:'+mentionRank[i][1]+'%; background-color:'+listColor[i]+';">'+mentionRank[i][0]+'</div></div></div>');
+            };
+
 }
 
 function procPastData(data) {
