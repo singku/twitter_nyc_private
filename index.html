@@ -1,12 +1,15 @@
 <html>
+
 <head>
     <title>Twitts Viz with socket.io and node.js</title>
     <meta charset='utf-8' />
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.18.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.18.0/mapbox-gl.css' rel='stylesheet' />
+    <!--
     <link href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.3/css/foundation.min.css">
+-->
 
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
@@ -39,20 +42,28 @@
         }
         
         #tweetsbox {
-			top: 0;
+            position: absolute;
+            top: 0;
             background-color: rgba(52, 152, 219, 0.2);
+            color: #FFF;
             height: 100px;
-            margin-bottom: 0px;
-            margin-left: 0px;
+            width: 500px;
+            /*            margin-bottom: 0px;*/
+            margin-left: 20px;
         }
         
         #map {
             position: absolute;
             top: 0;
             bottom: 0;
-            width: 70%;
+            width: 79%;
         }
-
+           .btn {
+        background-color: rgba(52, 152, 219, 0);
+        border: none;
+        color: #FFF;
+    }
+        /*
         .btn {
             height: 30px;
             position: absolute;
@@ -60,499 +71,533 @@
             top: 5px;
             border-radius: 1px;
         }
-
+*/
+        
+/*
         .topList {
-          background-color: white;
-          font-size: 1.2em;
-          color: black;
-          list-style-position: inside;
+            background-color: white;
+            font-size: 1.2em;
+            color: black;
+            list-style-position: inside;
         }
+        
         .ListTitle {
-          font-size: 1.5em;
+            font-size: 1.5em;
         }
+*/
     </style>
 </head>
 
 <body>
 
     <div id='map'></div>
-    <div style="position: absolute; right: 0; width: 30%;">
-      <div class="ListTitle">Top 10 Hashtag</div>
-      <ol id="hashTopList" class="topList"></ol>
-      <div class="ListTitle">Top 10 Mention</div>
-      <ol id="mentionTopList" class="topList"></ol>
+    <div style="position: absolute; right: 0; width: 21%;">
+
+
+
+        <div id="lists">
+            <div class=" panel panel-default">
+                <div class="panel-heading" style="background-color:#5592aa">
+                    <div class="row">
+                        <div class="btn-group">
+                            <a class="btn btn-default">Hashtag</a>
+                            <a class="btn btn-default">Mentioned</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-group">
+<!--                                <div class="ListTitle">Top 10 Hashtag</div>-->
+        <ol id="hashTopList" class="topList"></ol>
+<!--        <div class="ListTitle">Top 10 Mention</div>-->
+        <ol id="mentionTopList" class="topList"></ol>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+<!--
+        <div class="ListTitle">Top 10 Hashtag</div>
+        <ol id="hashTopList" class="topList"></ol>
+        <div class="ListTitle">Top 10 Mention</div>
+        <ol id="mentionTopList" class="topList"></ol>
+-->
     </div>
-	
-	<div class='row'>
-		<div class="small-6 columns small-centered">
-			<div class="alert alert-info" id="tweetsbox"><span>Real-Time Tweets</span>
-			</div>
-		</div>
 
-		<div class="form-group">
-			<div class="items-collection" id="message1">
-				<div class="items-collection1">
-					<div data-toggle="buttons" class="btn-group ">
-						<label class="btn btn-default col-xs-2 col-sm-4 col-md-3 col-lg-3 " id="1">
-							<div class="itemcontent">
-								<input type="radio" name="options" id="option1" autocomplete="off">Hashtop1
-							</div>
-						</label>
+    <div class='row'>
 
-						<label class="btn btn-default col-xs-2 col-sm-4 col-md-3 col-lg-3" id="2">
-							<div class="itemcontent">
-								<input type="radio" name="options" id="option2" autocomplete="off">top2
+        <div class="alert alert-info" id="tweetsbox"><span>Real-Time Tweets</span>
 
-							</div>
-						</label>
+        </div>
 
-						<label class="btn btn-default col-xs-2 col-sm-4 col-md-3 col-lg-3" id="3">
-							<div class="itemcontent">
-								<input type="radio" name="options" id="option3" autocomplete="off">top3
+<!--
+        <div class="form-group">
+            <div class="items-collection" id="message1">
+                <div class="items-collection1">
+                    <div data-toggle="buttons" class="btn-group ">
+                        <label class="btn btn-default col-xs-2 col-sm-4 col-md-3 col-lg-3 " id="1">
+                            <div class="itemcontent">
+                                <input type="radio" name="options" id="option1" autocomplete="off">Hashtop1
+                            </div>
+                        </label>
 
-							</div>
-						</label>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	<script src="/socket.io/socket.io.js"></script>
-	<script>
-		jQuery(function ($) {
-			var socket = io.connect();
-			var $tweetsbox = $('#tweetsbox');
-			var number = new Array(5);
-			var topic = new Array(5);
-			var iterator = 0;
-			var topKey = new Map();
+                        <label class="btn btn-default col-xs-2 col-sm-4 col-md-3 col-lg-3" id="2">
+                            <div class="itemcontent">
+                                <input type="radio" name="options" id="option2" autocomplete="off">top2
 
-			var hashRank = []; //descending sorted array with every element like [key, value] (sorted by value)
-			var mentionRank = []; //descending sorted array ...
-			var lastHashData = new Map(); // [key,value] value is set of coords
-			var lastMentionData = new Map();
-			var hashTop = [];
-			var mentionTop = [];
-			var restKeyword = [];
-			
-			socket.on('past data', function (data) {
-				var hashRankNsort = {};
-				var mentionRankNsort = {};
-				lastHashData.clear();
-				lastMentionData.clear();
+                            </div>
+                        </label>
 
-				for (var i = 0; i < data.length; i++) {
-					var property = data[i].properties.keyword;
-					if (data[i].properties.type == "mention") {
-						if (mentionRankNsort[property] === undefined) {
-							mentionRankNsort[property] = 1;
-						} else {
-							mentionRankNsort[property]++;
-						}
-						//map
-						var locs = [];
-						if (lastMentionData.has(property)) {
-							locs = lastMentionData.get(property);
-						}
-						locs.push(data[i].geometry.coordinates);
-						lastMentionData.set(property, locs);
-					} else {
-						if (hashRankNsort[property] === undefined) {
-							hashRankNsort[property] = 1;
-							hashRankNsort[property] = 1;
-						} else {
-							hashRankNsort[property]++;
-						}
-						//map
-						var locs = [];
-						if (lastHashData.has(property)) {
-							locs = lastHashData.get(property);
-						}
-						locs.push(data[i].geometry.coordinates);
-						lastHashData.set(property, locs)
-					}
-				}
-				hashRank = [];
-				mentionRank = [];
-				for (var key in hashRankNsort) {
-					hashRank.push([key, hashRankNsort[key]]);
-				}
-				hashRank.sort(function (a, b) {
-					return b[1] - a[1]
-				});
+                        <label class="btn btn-default col-xs-2 col-sm-4 col-md-3 col-lg-3" id="3">
+                            <div class="itemcontent">
+                                <input type="radio" name="options" id="option3" autocomplete="off">top3
 
-				for (var key in mentionRankNsort) {
-					mentionRank.push([key, mentionRankNsort[key]]);
-				}
-				mentionRank.sort(function (a, b) {
-					return b[1] - a[1]
-				});
-				hashTop[0] = [];
-				hashTop[1] = [];
-				hashTop[2] = [];
-				hashTop[3] = [];
-				hashTop[4] = [];
-				hashTop[5] = [];
-				hashTop[6] = [];
-				hashTop[7] = [];
-				hashTop[8] = [];
-				hashTop[9] = [];
-				mentionTop[0] = [];
-				mentionTop[1] = [];
-				mentionTop[2] = [];
-				mentionTop[3] = [];
-				mentionTop[4] = [];
-				mentionTop[5] = [];
-				mentionTop[6] = [];
-				mentionTop[7] = [];
-				mentionTop[8] = [];
-				mentionTop[9] = [];
-				for (var i = 0; i < data.length; i++) {
-					if (data[i].properties.keyword == hashRank[0][0]) { //1st hash
-						hashTop[0].push(data[i]);
-					} else if (data[i].properties.keyword == hashRank[1][0]) { //2nd
-						hashTop[1].push(data[i]);
-					} else if (data[i].properties.keyword == hashRank[2][0]) { //3rd
-						hashTop[2].push(data[i]);
-					} else if (data[i].properties.keyword == hashRank[3][0]) { //4th
-						hashTop[3].push(data[i]);
-					} else if (data[i].properties.keyword == hashRank[4][0]) { //5th
-						hashTop[4].push(data[i]);
-					} else if (data[i].properties.keyword == hashRank[5][0]) { //5th
-						hashTop[5].push(data[i]);
-					} else if (data[i].properties.keyword == hashRank[6][0]) { //5th
-						hashTop[6].push(data[i]);
-					} else if (data[i].properties.keyword == hashRank[7][0]) { //5th
-						hashTop[7].push(data[i]);
-					} else if (data[i].properties.keyword == hashRank[8][0]) { //5th
-						hashTop[8].push(data[i]);
-					} else if (data[i].properties.keyword == hashRank[9][0]) { //5th
-						hashTop[9].push(data[i]);
-					} else if (data[i].properties.keyword == mentionRank[0][0]) { //1st mention
-						mentionTop[0].push(data[i]);
-					} else if (data[i].properties.keyword == mentionRank[1][0]) { //2nd
-						mentionTop[1].push(data[i]);
-					} else if (data[i].properties.keyword == mentionRank[2][0]) { //3rd
-						mentionTop[2].push(data[i]);
-					} else if (data[i].properties.keyword == mentionRank[3][0]) { //4th
-						mentionTop[3].push(data[i]);
-					} else if (data[i].properties.keyword == mentionRank[4][0]) { //5th
-						mentionTop[4].push(data[i]);
-					} else if (data[i].properties.keyword == mentionRank[5][0]) { //5th
-						mentionTop[5].push(data[i]);
-					} else if (data[i].properties.keyword == mentionRank[6][0]) { //5th
-						mentionTop[6].push(data[i]);
-					} else if (data[i].properties.keyword == mentionRank[7][0]) { //5th
-						mentionTop[7].push(data[i]);
-					} else if (data[i].properties.keyword == mentionRank[8][0]) { //5th
-						mentionTop[8].push(data[i]);
-					} else if (data[i].properties.keyword == mentionRank[9][0]) { //5th
-						mentionTop[9].push(data[i]);
-					} else {
-						restKeyword.push(data[i]);
-					}
-				}
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+-->
+    </div>
 
-				var ul = document.getElementById("hashTopList");
-				if(ul.childNodes.length == 0){
-				  for(var i = 0; i < hashTop.length; i ++){
-					li = document.createElement("li");
-					ul.appendChild(li);
-				  }
-				}
-				for(var i = 0; i < hashTop.length; i ++){
-				  var li = ul.childNodes[i];
-				  li.innerText = hashTop[i][0].properties.keyword + ' : ' + hashTop[i].length;
-				}
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        jQuery(function ($) {
+            var socket = io.connect();
+            var $tweetsbox = $('#tweetsbox');
+            var number = new Array(5);
+            var topic = new Array(5);
+            var iterator = 0;
+            var topKey = new Map();
 
-				var ul = document.getElementById("mentionTopList");
-				if(ul.childNodes.length == 0){
-				  for(var i = 0; i < mentionTop.length; i ++){
-					li = document.createElement("li");
-					ul.appendChild(li);
-				  }
-				}
-				for(var i = 0; i < mentionTop.length; i ++){
-				  var li = ul.childNodes[i];
-				  li.innerText = mentionTop[i][0].properties.keyword + ' : ' + mentionTop[i].length;
+            var hashRank = []; //descending sorted array with every element like [key, value] (sorted by value)
+            var mentionRank = []; //descending sorted array ...
+            var lastHashData = new Map(); // [key,value] value is set of coords
+            var lastMentionData = new Map();
+            var hashTop = [];
+            var mentionTop = [];
+            var restKeyword = [];
 
-				}
-				setData();
-			});
+            socket.on('past data', function (data) {
+                var hashRankNsort = {};
+                var mentionRankNsort = {};
+                lastHashData.clear();
+                lastMentionData.clear();
 
-			var tweets_temp = []; // Records data for real-time tweets
-			var map;
-			var point_count = 0;
-			var animation = [[1, 0.5], [20, 1], [50, 0.5], [100, 0]];
+                for (var i = 0; i < data.length; i++) {
+                    var property = data[i].properties.keyword;
+                    if (data[i].properties.type == "mention") {
+                        if (mentionRankNsort[property] === undefined) {
+                            mentionRankNsort[property] = 1;
+                        } else {
+                            mentionRankNsort[property]++;
+                        }
+                        //map
+                        var locs = [];
+                        if (lastMentionData.has(property)) {
+                            locs = lastMentionData.get(property);
+                        }
+                        locs.push(data[i].geometry.coordinates);
+                        lastMentionData.set(property, locs);
+                    } else {
+                        if (hashRankNsort[property] === undefined) {
+                            hashRankNsort[property] = 1;
+                            hashRankNsort[property] = 1;
+                        } else {
+                            hashRankNsort[property]++;
+                        }
+                        //map
+                        var locs = [];
+                        if (lastHashData.has(property)) {
+                            locs = lastHashData.get(property);
+                        }
+                        locs.push(data[i].geometry.coordinates);
+                        lastHashData.set(property, locs)
+                    }
+                }
+                hashRank = [];
+                mentionRank = [];
+                for (var key in hashRankNsort) {
+                    hashRank.push([key, hashRankNsort[key]]);
+                }
+                hashRank.sort(function (a, b) {
+                    return b[1] - a[1]
+                });
 
-			$(document).ready(function () {
-				mapboxgl.accessToken = 'pk.eyJ1Ijoid2Vpc2hpIiwiYSI6ImNpbmc5cHV4bzFnOHJ1Zmx3ZGxpaGU0aGIifQ.L20RZ709ePgurmOeOYPwXg';
-				map = new mapboxgl.Map({
-					container: 'map'
-					, style: 'mapbox://styles/mapbox/dark-v8'
-					, center: [-73.961425, 40.786338]
-					, zoom: 11.7
-				});
-				//here you try to ask the user position then setView to map
+                for (var key in mentionRankNsort) {
+                    mentionRank.push([key, mentionRankNsort[key]]);
+                }
+                mentionRank.sort(function (a, b) {
+                    return b[1] - a[1]
+                });
+                hashTop[0] = [];
+                hashTop[1] = [];
+                hashTop[2] = [];
+                hashTop[3] = [];
+                hashTop[4] = [];
+                hashTop[5] = [];
+                hashTop[6] = [];
+                hashTop[7] = [];
+                hashTop[8] = [];
+                hashTop[9] = [];
+                mentionTop[0] = [];
+                mentionTop[1] = [];
+                mentionTop[2] = [];
+                mentionTop[3] = [];
+                mentionTop[4] = [];
+                mentionTop[5] = [];
+                mentionTop[6] = [];
+                mentionTop[7] = [];
+                mentionTop[8] = [];
+                mentionTop[9] = [];
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].properties.keyword == hashRank[0][0]) { //1st hash
+                        hashTop[0].push(data[i]);
+                    } else if (data[i].properties.keyword == hashRank[1][0]) { //2nd
+                        hashTop[1].push(data[i]);
+                    } else if (data[i].properties.keyword == hashRank[2][0]) { //3rd
+                        hashTop[2].push(data[i]);
+                    } else if (data[i].properties.keyword == hashRank[3][0]) { //4th
+                        hashTop[3].push(data[i]);
+                    } else if (data[i].properties.keyword == hashRank[4][0]) { //5th
+                        hashTop[4].push(data[i]);
+                    } else if (data[i].properties.keyword == hashRank[5][0]) { //5th
+                        hashTop[5].push(data[i]);
+                    } else if (data[i].properties.keyword == hashRank[6][0]) { //5th
+                        hashTop[6].push(data[i]);
+                    } else if (data[i].properties.keyword == hashRank[7][0]) { //5th
+                        hashTop[7].push(data[i]);
+                    } else if (data[i].properties.keyword == hashRank[8][0]) { //5th
+                        hashTop[8].push(data[i]);
+                    } else if (data[i].properties.keyword == hashRank[9][0]) { //5th
+                        hashTop[9].push(data[i]);
+                    } else if (data[i].properties.keyword == mentionRank[0][0]) { //1st mention
+                        mentionTop[0].push(data[i]);
+                    } else if (data[i].properties.keyword == mentionRank[1][0]) { //2nd
+                        mentionTop[1].push(data[i]);
+                    } else if (data[i].properties.keyword == mentionRank[2][0]) { //3rd
+                        mentionTop[2].push(data[i]);
+                    } else if (data[i].properties.keyword == mentionRank[3][0]) { //4th
+                        mentionTop[3].push(data[i]);
+                    } else if (data[i].properties.keyword == mentionRank[4][0]) { //5th
+                        mentionTop[4].push(data[i]);
+                    } else if (data[i].properties.keyword == mentionRank[5][0]) { //5th
+                        mentionTop[5].push(data[i]);
+                    } else if (data[i].properties.keyword == mentionRank[6][0]) { //5th
+                        mentionTop[6].push(data[i]);
+                    } else if (data[i].properties.keyword == mentionRank[7][0]) { //5th
+                        mentionTop[7].push(data[i]);
+                    } else if (data[i].properties.keyword == mentionRank[8][0]) { //5th
+                        mentionTop[8].push(data[i]);
+                    } else if (data[i].properties.keyword == mentionRank[9][0]) { //5th
+                        mentionTop[9].push(data[i]);
+                    } else {
+                        restKeyword.push(data[i]);
+                    }
+                }
 
-				map.on('style.load', function () {
-					registerTempLayer("marker_temp", "lightblue");
-					registerLayer("marker_all", "#c84337", false, 0.9);
-					registerLayer("marker_2", "#ca7f35", false, 0.9);
-					registerLayer("marker_3", "#d9be26", false, 0.9);
-					registerLayer("marker_4", "#a1be41", false, 0.8);
-					registerLayer("marker_5", "#3cc382", false, 0.8);
-					registerLayer("marker_6", "#3f88bf", false, 0.8);
-					registerLayer("marker_7", "#3f88bf", false, 0.6);
-					registerLayer("marker_8", "#3f88bf", false, 0.4);
-					registerLayer("marker_9", "#3f88bf", false, 0.2);
-					registerLayer("marker_10", "#3f88bf", false, 0.1);
-					
-					registerLayer("mention_0", "#c84337", false, 0.9);
-					registerLayer("mention_1", "#ca7f35", false, 0.9);
-					registerLayer("mention_2", "#d9be26", false, 0.9);
-					registerLayer("mention_3", "#a1be41", false, 0.8);
-					registerLayer("mention_4", "#3cc382", false, 0.8);
-					registerLayer("mention_5", "#3f88bf", false, 0.8);
-					registerLayer("mention_6", "#3f88bf", false, 0.6);
-					registerLayer("mention_7", "#3f88bf", false, 0.4);
-					registerLayer("mention_8", "#3f88bf", false, 0.2);
-					registerLayer("mention_9", "#3f88bf", false, 0.1);
-					//registerLayer("restword", "white", false, 0.1);
-					setData();
-				});
-			});
+                var ul = document.getElementById("hashTopList");
+                if (ul.childNodes.length == 0) {
+                    for (var i = 0; i < hashTop.length; i++) {
+                        li = document.createElement("li");
+                        ul.appendChild(li);
+                    }
+                }
+                for (var i = 0; i < hashTop.length; i++) {
+                    var li = ul.childNodes[i];
+                    li.innerText = hashTop[i][0].properties.keyword + ' : ' + hashTop[i].length;
+                }
 
-			socket.on('new tweets', function (data) {
-				displayMsg(data);
-				showPoint(data);
-			});
+                var ul = document.getElementById("mentionTopList");
+                if (ul.childNodes.length == 0) {
+                    for (var i = 0; i < mentionTop.length; i++) {
+                        li = document.createElement("li");
+                        ul.appendChild(li);
+                    }
+                }
+                for (var i = 0; i < mentionTop.length; i++) {
+                    var li = ul.childNodes[i];
+                    li.innerText = mentionTop[i][0].properties.keyword + ' : ' + mentionTop[i].length;
 
-			function manageTweet(tweet) {
-				return {
-					"type": "Feature"
-					, "geometry": {
-						"type": "Point"
-						, "coordinates": tweet.coord
-					}
-					, "properties": {
-						"text": tweet.text
-					}
-				}
-			}
+                }
+                setData();
+            });
 
-			function manageTweets(tweets) {
-				var points = tweets.map(function (tweet) {
-						return manageTweet(tweet);
+            var tweets_temp = []; // Records data for real-time tweets
+            var map;
+            var point_count = 0;
+            var animation = [[1, 0.5], [20, 1], [50, 0.5], [100, 0]];
 
-					})
-				points = {
-						"type": "FeatureCollection"
-						, "features": points
-					}
-				return points;
-			}
+            $(document).ready(function () {
+                mapboxgl.accessToken = 'pk.eyJ1Ijoid2Vpc2hpIiwiYSI6ImNpbmc5cHV4bzFnOHJ1Zmx3ZGxpaGU0aGIifQ.L20RZ709ePgurmOeOYPwXg';
+                map = new mapboxgl.Map({
+                    container: 'map'
+                    , style: 'mapbox://styles/mapbox/dark-v8'
+                    , center: [-73.961425, 40.786338]
+                    , zoom: 11.7
+                });
+                //here you try to ask the user position then setView to map
 
-			function manageLastData(tweets) {
-				var points = {
-					"type": "FeatureCollection"
-					, "features": tweets
-				}
-				return points;
-			}
+                map.on('style.load', function () {
+                    registerTempLayer("marker_temp", "lightblue");
+                    registerLayer("marker_all", "#c84337", false, 0.9);
+                    registerLayer("marker_2", "#ca7f35", false, 0.9);
+                    registerLayer("marker_3", "#d9be26", false, 0.9);
+                    registerLayer("marker_4", "#a1be41", false, 0.8);
+                    registerLayer("marker_5", "#3cc382", false, 0.8);
+                    registerLayer("marker_6", "#3f88bf", false, 0.8);
+                    registerLayer("marker_7", "#3f88bf", false, 0.6);
+                    registerLayer("marker_8", "#3f88bf", false, 0.4);
+                    registerLayer("marker_9", "#3f88bf", false, 0.2);
+                    registerLayer("marker_10", "#3f88bf", false, 0.1);
 
-			function registerLayer(name, color, docluster, opacity) {
-				map.addSource(name, {
-					"type": "geojson"
-					, "data": manageLastData([])
-					, cluster: docluster
-					, clusterMaxZoom: 40, // Max zoom to cluster points on
-					clusterRadius: 50
-				});
-				map.addLayer({
-					"id": name, // "interactive": true,
-					"type": "circle"
-					, "source": name
-					, "paint": {
-						"circle-color": color
-						, "circle-radius": 3
-						, "circle-opacity": opacity
-					}
-				});
-				//                    map.addLayer({
-				//                        "id": name, // "interactive": true,
-				//                        "type": "symbol"
-				//                        , "source": name, //        "paint": {
-				//            "circle-color": color,
-				//            "circle-radius": 1,
-				//            "circle-opacity": 1
-				//        }
-				//                        "layout": {
-				//                            //"icon-image": "",
-				//                            "icon-allow-overlap": false
-				//                            , "text-field": "{keyword}"
-				//                            , "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"]
-				//                            , "text-size": 9
-				//                            , "text-transform": "uppercase"
-				//                            , "text-letter-spacing": 0.05
-				//                            , "text-offset": [0, 1.5]
-				//                        }
-				//                        , "paint": {
-				//                            "text-color": "#202"
-				//                            , "text-halo-color": color
-				//                            , "text-halo-width": 2
-				//
-				//                        }
-				//                    });
-			}
+                    registerLayer("mention_0", "#c84337", false, 0.9);
+                    registerLayer("mention_1", "#ca7f35", false, 0.9);
+                    registerLayer("mention_2", "#d9be26", false, 0.9);
+                    registerLayer("mention_3", "#a1be41", false, 0.8);
+                    registerLayer("mention_4", "#3cc382", false, 0.8);
+                    registerLayer("mention_5", "#3f88bf", false, 0.8);
+                    registerLayer("mention_6", "#3f88bf", false, 0.6);
+                    registerLayer("mention_7", "#3f88bf", false, 0.4);
+                    registerLayer("mention_8", "#3f88bf", false, 0.2);
+                    registerLayer("mention_9", "#3f88bf", false, 0.1);
+                    //registerLayer("restword", "white", false, 0.1);
+                    setData();
+                });
+            });
 
-			function showPoints(tweets) {
-				ChangeLayerLastData("marker_all", tweets);
-			}
+            socket.on('new tweets', function (data) {
+                displayMsg(data);
+                showPoint(data);
+            });
 
-			function hideLayer(layer) {
-				ChangeLayerLastData(layer, []);
-			}
+            function manageTweet(tweet) {
+                return {
+                    "type": "Feature"
+                    , "geometry": {
+                        "type": "Point"
+                        , "coordinates": tweet.coord
+                    }
+                    , "properties": {
+                        "text": tweet.text
+                    }
+                }
+            }
 
-			function showPoint(tweet) {
-				tweets_temp.push(tweet);
-				ChangeLayerData("marker_temp", tweets_temp);
-				var cur_point = "marker_point" + point_count;
-				++point_count;
-				registerTempLayer(cur_point, "lightblue");
-				ChangeLayerData(cur_point, [tweet]);
-				animatePoint(cur_point, Date.now());
-			}
+            function manageTweets(tweets) {
+                var points = tweets.map(function (tweet) {
+                    return manageTweet(tweet);
 
-			function animatePoint(id, start_time) {
-				var cur_frame = Math.floor((Date.now() - start_time) / 200);
-				if (cur_frame <= 3) {
-					map.setPaintProperty(id, "circle-radius", animation[cur_frame][0]);
-					map.setPaintProperty(id, "circle-opacity", animation[cur_frame][1]);
-					requestAnimationFrame(function () {
-						animatePoint(id, start_time);
-					});
-				} else {
-					map.removeSource(id);
-					map.removeLayer(id);
-				}
-			}
+                })
+                points = {
+                    "type": "FeatureCollection"
+                    , "features": points
+                }
+                return points;
+            }
 
-			function registerTempLayer(name, color) {
-				map.addSource(name, {
-					"type": "geojson"
-					, "data": manageTweets([])
-				});
-				map.addLayer({
-					"id": name, // "interactive": true,
-					"type": "circle"
-					, "source": name
-					, "paint": {
-						"circle-color": color
-						, "circle-radius": 1
-						, "circle-opacity": 0.2
-					}
-				});
-			}
+            function manageLastData(tweets) {
+                var points = {
+                    "type": "FeatureCollection"
+                    , "features": tweets
+                }
+                return points;
+            }
 
-			function ChangeLayerLastData(layer, tweets) {
-				tweets = manageLastData(tweets);
-				map.getSource(layer).setData(tweets);
-			}
+            function registerLayer(name, color, docluster, opacity) {
+                map.addSource(name, {
+                    "type": "geojson"
+                    , "data": manageLastData([])
+                    , cluster: docluster
+                    , clusterMaxZoom: 40, // Max zoom to cluster points on
+                    clusterRadius: 50
+                });
+                map.addLayer({
+                    "id": name, // "interactive": true,
+                    "type": "circle"
+                    , "source": name
+                    , "paint": {
+                        "circle-color": color
+                        , "circle-radius": 3
+                        , "circle-opacity": opacity
+                    }
+                });
+                //                    map.addLayer({
+                //                        "id": name, // "interactive": true,
+                //                        "type": "symbol"
+                //                        , "source": name, //        "paint": {
+                //            "circle-color": color,
+                //            "circle-radius": 1,
+                //            "circle-opacity": 1
+                //        }
+                //                        "layout": {
+                //                            //"icon-image": "",
+                //                            "icon-allow-overlap": false
+                //                            , "text-field": "{keyword}"
+                //                            , "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"]
+                //                            , "text-size": 9
+                //                            , "text-transform": "uppercase"
+                //                            , "text-letter-spacing": 0.05
+                //                            , "text-offset": [0, 1.5]
+                //                        }
+                //                        , "paint": {
+                //                            "text-color": "#202"
+                //                            , "text-halo-color": color
+                //                            , "text-halo-width": 2
+                //
+                //                        }
+                //                    });
+            }
 
-			function ChangeLayerData(layer, tweets) {
-				tweets = manageTweets(tweets);
-				map.getSource(layer).setData(tweets);
-			}
-			
-			function setData() {
-				ChangeLayerLastData("marker_2", hashTop[1]);
-				ChangeLayerLastData("marker_3", hashTop[2]);
-				ChangeLayerLastData("marker_4", hashTop[3]);
-				ChangeLayerLastData("marker_5", hashTop[4]);
-				ChangeLayerLastData("marker_6", hashTop[5]);
-				ChangeLayerLastData("marker_7", hashTop[6]);
-				ChangeLayerLastData("marker_8", hashTop[7]);
-				ChangeLayerLastData("marker_9", hashTop[8]);
-				ChangeLayerLastData("marker_10", hashTop[9]);
-				
-				ChangeLayerLastData("mention_0", mentionTop[0]);
-				ChangeLayerLastData("mention_1", mentionTop[1]);
-				ChangeLayerLastData("mention_2", mentionTop[2]);
-				ChangeLayerLastData("mention_3", mentionTop[3]);
-				ChangeLayerLastData("mention_4", mentionTop[4]);
-				ChangeLayerLastData("mention_5", mentionTop[5]);
-				ChangeLayerLastData("mention_6", mentionTop[6]);
-				ChangeLayerLastData("mention_7", mentionTop[7]);
-				ChangeLayerLastData("mention_8", mentionTop[8]);
-				ChangeLayerLastData("mention_9", mentionTop[9]);
-				//ChangeLayerLastData("restword", restKeyword);
-			}
+            function showPoints(tweets) {
+                ChangeLayerLastData("marker_all", tweets);
+            }
 
-			function refreshPastData() {
-				socket.emit('past data');
-			}
-			var refreshId = setInterval(refreshPastData, 60000);
+            function hideLayer(layer) {
+                ChangeLayerLastData(layer, []);
+            }
 
-			function displayMsg(data) {
-				$tweetsbox.html('<span class="msg"><b>' + data.user + ': </b>' + data.text + ' ' + "</span><br/>");
-				//showPoints(hashTop[0]);
-				//                        var layers = [
-				//        [150, '#FFF'],
-				//        [20, '#FFF'],
-				//        [0, '#FFF']
-				//    ];
-				//
-				//    layers.forEach(function (layer, i) {
-				//        map.addLayer({
-				//            "id": "cluster-" + i,
-				//            "type": "circle",
-				//            "source": "restword",
-				//            "paint": {
-				//                "circle-color": layer[1],
-				//                "circle-radius": 2,
-				//                "circle-opacity": 0.1
-				//            },
-				//            "filter": i == 0 ?
-				//                [">=", "point_count", layer[0]] :
-				//                ["all",
-				//                    [">=", "point_count", layer[0]],
-				//                    ["<", "point_count", layers[i - 1][0]]]
-				//        });
-				//    });
+            function showPoint(tweet) {
+                tweets_temp.push(tweet);
+                ChangeLayerData("marker_temp", tweets_temp);
+                var cur_point = "marker_point" + point_count;
+                ++point_count;
+                registerTempLayer(cur_point, "lightblue");
+                ChangeLayerData(cur_point, [tweet]);
+                animatePoint(cur_point, Date.now());
+            }
 
-				// Add a layer for the clusters' count labels
-				//    map.addLayer({
-				//        "id": "cluster-count",
-				//        "type": "symbol",
-				//        "source": "restword",
-				//        "layout": {
-				//            "text-field": "{point_count}",
-				//            "text-font": [
-				//                    "DIN Offc Pro Medium",
-				//                    "Arial Unicode MS Bold"
-				//                ],
-				//            "text-size": 6
-				//        }
-				//    });
+            function animatePoint(id, start_time) {
+                var cur_frame = Math.floor((Date.now() - start_time) / 200);
+                if (cur_frame <= 3) {
+                    map.setPaintProperty(id, "circle-radius", animation[cur_frame][0]);
+                    map.setPaintProperty(id, "circle-opacity", animation[cur_frame][1]);
+                    requestAnimationFrame(function () {
+                        animatePoint(id, start_time);
+                    });
+                } else {
+                    map.removeSource(id);
+                    map.removeLayer(id);
+                }
+            }
 
-			}
-			$("#message1 label.btn").on("click", function () {
-				console.log($(this).attr('id'));
-				if ($(this).attr('id') == 1) {
-					map.setLayoutProperty("marker_all", 'visibility', 'none');
-					//             hideLayer("restword");
-				}
-				if ($(this).attr('id') == 2) {
-					map.setLayoutProperty("marker_all", 'visibility', 'visible');
-					//             hideLayer("restword");
-				}
-			});
+            function registerTempLayer(name, color) {
+                map.addSource(name, {
+                    "type": "geojson"
+                    , "data": manageTweets([])
+                });
+                map.addLayer({
+                    "id": name, // "interactive": true,
+                    "type": "circle"
+                    , "source": name
+                    , "paint": {
+                        "circle-color": color
+                        , "circle-radius": 2
+                        , "circle-opacity": 0.9
+                    }
+                });
+            }
 
-		});
-	</script>
+            function ChangeLayerLastData(layer, tweets) {
+                tweets = manageLastData(tweets);
+                map.getSource(layer).setData(tweets);
+            }
+
+            function ChangeLayerData(layer, tweets) {
+                tweets = manageTweets(tweets);
+                map.getSource(layer).setData(tweets);
+            }
+
+            function setData() {
+                ChangeLayerLastData("marker_2", hashTop[1]);
+                ChangeLayerLastData("marker_3", hashTop[2]);
+                ChangeLayerLastData("marker_4", hashTop[3]);
+                ChangeLayerLastData("marker_5", hashTop[4]);
+                ChangeLayerLastData("marker_6", hashTop[5]);
+                ChangeLayerLastData("marker_7", hashTop[6]);
+                ChangeLayerLastData("marker_8", hashTop[7]);
+                ChangeLayerLastData("marker_9", hashTop[8]);
+                ChangeLayerLastData("marker_10", hashTop[9]);
+
+                ChangeLayerLastData("mention_0", mentionTop[0]);
+                ChangeLayerLastData("mention_1", mentionTop[1]);
+                ChangeLayerLastData("mention_2", mentionTop[2]);
+                ChangeLayerLastData("mention_3", mentionTop[3]);
+                ChangeLayerLastData("mention_4", mentionTop[4]);
+                ChangeLayerLastData("mention_5", mentionTop[5]);
+                ChangeLayerLastData("mention_6", mentionTop[6]);
+                ChangeLayerLastData("mention_7", mentionTop[7]);
+                ChangeLayerLastData("mention_8", mentionTop[8]);
+                ChangeLayerLastData("mention_9", mentionTop[9]);
+
+                //ChangeLayerLastData("restword", restKeyword);
+            }
+
+            function refreshPastData() {
+                socket.emit('past data');
+            }
+            var refreshId = setInterval(refreshPastData, 60000);
+
+            function displayMsg(data) {
+                $tweetsbox.html('<span class="msg"><b>' + data.user + ': </b>' + data.text + ' ' + "</span><br/>");
+                showPoints(hashTop[0]);
+                //                        var layers = [
+                //        [150, '#FFF'],
+                //        [20, '#FFF'],
+                //        [0, '#FFF']
+                //    ];
+                //
+                //    layers.forEach(function (layer, i) {
+                //        map.addLayer({
+                //            "id": "cluster-" + i,
+                //            "type": "circle",
+                //            "source": "restword",
+                //            "paint": {
+                //                "circle-color": layer[1],
+                //                "circle-radius": 2,
+                //                "circle-opacity": 0.1
+                //            },
+                //            "filter": i == 0 ?
+                //                [">=", "point_count", layer[0]] :
+                //                ["all",
+                //                    [">=", "point_count", layer[0]],
+                //                    ["<", "point_count", layers[i - 1][0]]]
+                //        });
+                //    });
+
+                // Add a layer for the clusters' count labels
+                //    map.addLayer({
+                //        "id": "cluster-count",
+                //        "type": "symbol",
+                //        "source": "restword",
+                //        "layout": {
+                //            "text-field": "{point_count}",
+                //            "text-font": [
+                //                    "DIN Offc Pro Medium",
+                //                    "Arial Unicode MS Bold"
+                //                ],
+                //            "text-size": 6
+                //        }
+                //    });
+
+            }
+            $("#message1 label.btn").on("click", function () {
+                //				console.log($(this).attr('id'));
+                if ($(this).attr('id') == 1) {
+                    map.setLayoutProperty("marker_all", 'visibility', 'none');
+                    //             hideLayer("restword");
+                }
+                if ($(this).attr('id') == 2) {
+                    map.setLayoutProperty("marker_all", 'visibility', 'visible');
+                    //             hideLayer("restword");
+                }
+            });
+
+        });
+    </script>
 </body>
 
 </html>
