@@ -84,10 +84,14 @@ twittClient.stream('statuses/filter', {locations: '-74,40,-73,41'}, function(str
         })
         if (!valid) return;
         var time = parseInt(tweet.timestamp_ms);
+		point["properties"] = {
+			"text":text
+		};
         var content = {
             "user":user,
             "text":text,
-            "coord":coord
+            "coord":coord,
+            "point": point
         }
     	function storeHashtag(tweet) {
             var hashtag = [];
@@ -197,7 +201,7 @@ io.sockets.on('connection', function(socket) {
     }
 
     //updateKeywordList();
-    getLast24HoursData();
+    //getLast24HoursData();
 
     socket.on('update keyword list', function() {
         updateKeywordList();
