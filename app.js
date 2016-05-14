@@ -138,6 +138,10 @@ app.get('/', function(req, rsp) {
     rsp.sendfile(__dirname + '/index.html');
 });
 
+app.get('/func.js', function(req, rsp) {
+    rsp.sendfile(__dirname + '/func.js');
+});
+
 function schemaGetFirstNBetween(start, end, N) {
     var schema = [
         { $match: {"time": {$gte:start, $lt:end}}},
