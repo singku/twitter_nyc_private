@@ -5,10 +5,11 @@ var hashRank = []; //descending sorted array with every element like [key, value
 var mentionRank = []; //descending sorted array ...
 var lastHashData = new Map(); // [key,value] value is an obj include set of coords, and set of trends
 var lastMentionData = new Map();
-var listColor = ["#b54a4a", "#b4704b", "#b4964b", "#8fba45", "#5bb946", "#4bb470", "#4cafb3", "#4894b7", "#5475ab", "#6353ac"];
+//var listColor = ["#b54a4a", "#b4704b", "#b4964b", "#8fba45", "#5bb946", "#4bb470", "#4cafb3", "#4894b7", "#5475ab", "#6353ac"];
+var listColor = ['#8b0000','#ba5211','#e08a3a','#fabc71','#ffeab7','#e8facf','#bae1b6','#8eb9a6','#5f849d','#004499'];
 var tweets_temp = []; // Records data for real-time tweets
 var map;
-var animation = [[1, 0.5], [20, 0.8], [50, 0.4], [75, 0]];
+var animation = [[1, 0.5], [20, 0.8], [30, 0.4], [50, 0]];
 var selectedTab = "hash";
 var pastHrs = 6;
 
@@ -163,11 +164,15 @@ function ChangeLayerData(layer, tweetPoints) {
 }
 
 function serveData() {
+    var TopHash;
 	for (var i = 0; i < limit; i++) {
 		var layer = "hash_" + i;
 		var key = hashRank[i][0];
+        var temp += keyLocSetToGeoArray(key, lastHashData.get(key).locs);
+        console.log(temp);
 		ChangeLayerLastData(layer, keyLocSetToGeoArray(key, lastHashData.get(key).locs));
 	}
+    ChangeLayerLastData("text", TopHash);
 	for (var i = 0; i < limit; i++) {
 		var layer = "mention_" + i;
 		var key = mentionRank[i][0];
@@ -228,6 +233,36 @@ function registerLayer(name, color, docluster, opacity, radius) {
 			"circle-opacity": opacity
 		}
 	});
+}
+
+function registerExtraLayer(name, color) {
+    map.addSource(name, {
+        "type": "geojson",
+        "data": genGeoTweets([]), 
+		cluster: true, 
+		clusterMaxZoom: 40, // Max zoom to cluster points on
+		clusterRadius: 50
+    });
+    map.addLayer({
+        "id": name,
+        "type": "symbol",
+        "source": name,
+
+        "layout": {
+                    "icon-allow-overlap": true,
+                    "text-field":"{text}",
+                    "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+                    "text-size": 9,
+                    "text-transform": "uppercase",
+                    "text-letter-spacing": 0.05,
+                    "text-offset": [0, 1.5]
+                },
+                "paint": {
+                    "text-color": "#202",
+                    "text-halo-color": color,
+                    "text-halo-width": 2
+                }
+    });
 }
 
 function showPoint(tweet) {
