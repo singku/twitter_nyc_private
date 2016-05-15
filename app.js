@@ -39,9 +39,10 @@ var twittSchema = mongoose.Schema({
     keyword: String,
     type: String,
     time: Number,
+    user: String,
     location: Array,
     createDate:  {
-     type: Date, expires: 60*60*24*5, default:Date.now
+        type: Date, expires: 60*60*24*5, default:Date.now
     },
 });
 
@@ -82,7 +83,7 @@ twittClient.stream('statuses/filter', {locations: '-74,40,-73,41'}, function(str
                 return true;
             }
         })
-        if (!valid) return;
+        //if (!valid) return;
         var time = parseInt(tweet.timestamp_ms);
 		point["properties"] = {
 			"text":text
@@ -99,7 +100,7 @@ twittClient.stream('statuses/filter', {locations: '-74,40,-73,41'}, function(str
             if(length != 0) {
                 for (var i = 0; i < length; i++) {
                     var tag = stemmer(tweet.entities.hashtags[i].text.toLowerCase());
-                    var newTwit = new twittHandle({keyword:tag.toUpperCase(), type:"hashtag", time:time, location: coord});
+                    var newTwit = new twittHandle({keyword:tag.toUpperCase(), type:"hashtag", time:time, user:user, location: coord});
                     newTwit.save(function(err) {
                         if (err) throw err;
                     });
@@ -112,7 +113,7 @@ twittClient.stream('statuses/filter', {locations: '-74,40,-73,41'}, function(str
             if(length != 0) {
                 for (var i = 0; i < length; i++) {
                     var name = stemmer(tweet.entities.user_mentions[i].screen_name.toLowerCase());
-                    var newTwit = new twittHandle({keyword:name.toUpperCase(), type:"mention", time:time, location: coord});
+                    var newTwit = new twittHandle({keyword:name.toUpperCase(), type:"mention", time:time, user:user, location: coord});
                     newTwit.save(function(err) {
                         if (err) throw err;
                     });
@@ -144,7 +145,7 @@ app.get('/func.js', function(req, rsp) {
 
 function schemaGetFirstNBetween(start, end, N) {
     var schema = [
-        { $match: {"time": {$gte:start, $lt:end}}},
+        { $match: {"time": {$gt:start, $lt:end}}},
         { $group: {_id: "$keyword", "count": {$sum:1}}},
         { $sort: {count: -1}},
         { $limit: N}
@@ -154,16 +155,16 @@ function schemaGetFirstNBetween(start, end, N) {
 
 function schemaGetKeyTrendBetween(keyword, start, end) {
     var schema = [
-        { $match: {"time": {$gte:start, $lt:end}, "keyword":keyword}},
+        { $match: {"time": {$gt:start, $lt:end}, "keyword":keyword}},
         { $sort: {time: 1}}
     ];
     return schema;
 }
 
 function shcemaGetData(start, end) {
-    var schema = [
-        { $match: {"time": {$gte:start, $lt:end}}}
-    ];
+    var schema = {
+        "time": {$gt:start, $lt:end}
+    };
     return schema;
 }
 
@@ -179,11 +180,21 @@ io.sockets.on('connection', function(socket) {
         });
     }
 
-    function getLast24HoursData() {
+    function getPastData(pastHrs) {
         var end = Date.now();
-        var start = end - 86400*1000;
+        var start;
+		if (pastHrs === undefined) {
+			start = end - 86400*1000;
+		} else {
+			var tmp = parseInt(pastHrs);
+			if (tmp > 7 * 24 || tmp < 1) {
+				start = end - 86400*1000;
+			} else {
+				start = end - tmp*3600*1000;
+			}
+		}
         var query = twittHandle.find(shcemaGetData(start, end));
-        query.select({"keyword":1, "_id":0, "type":1, "location":1});
+        query.select({"keyword":1, "_id":0, "type":1, "location":1, "time":1});
         query.exec(function(err, docs) {
             var data = [];
             for (var i = 0; i < docs.length; i++) {
@@ -195,7 +206,8 @@ io.sockets.on('connection', function(socket) {
                     },
                     "properties": {
                         "type": docs[i].type,
-                        "keyword": docs[i].keyword
+                        "keyword": docs[i].keyword,
+                        "time": docs[i].time
                     }
                 };
                 data.push(tmp);
@@ -212,9 +224,19 @@ io.sockets.on('connection', function(socket) {
     });
 
     //req and rsp of keyword trend
-    socket.on('keyword trend', function(data, callback) {
+    socket.on('keyword trend', function(data, pastHrs, callback) {
         var end = Date.now();
-        var start = end - 7200*1000;
+        var start;
+		if (pastHrs === undefined) {
+			start = end - 86400*1000;
+		} else {
+			var tmp = parseInt(pastHrs);
+			if (tmp > 7 * 24 || tmp < 1) {
+				start = end - 86400*1000;
+			} else {
+				start = end - pastHrs*3600*1000;
+			}
+		}
 		if (data == undefined) {
 			return;
 		}
@@ -248,7 +270,7 @@ io.sockets.on('connection', function(socket) {
     });
 
     //socket io cmd format
-    socket.on('past data', function() {
-        getLast24HoursData();
+    socket.on('past data', function(pastHrs) {
+        getPastData(pastHrs);
     });
 });

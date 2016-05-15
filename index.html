@@ -11,6 +11,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/func.js"></script>
 
     <style>
         #tweetsbox {
@@ -76,6 +80,20 @@
 			color: #FFF;
 			margin-bottom: 0;
 		}
+
+        .progress-label {
+            float: left;
+            color: black;
+            font-weight: bold;
+        }
+        .progress-num {
+            float: right;
+            color: black;
+            font-weight: bold;
+        }
+		.progress {
+			cursor:pointer;
+		}
     </style>
 </head>
 
@@ -100,19 +118,30 @@
 				<div class="row">
 					<center>
 						<div class="btn-group" id="title">
-							<button class="btn btn-default" id="hash" onclick="updateHash()"><strong><i class="fa fa-hashtag" aria-hidden="true"></i>Hash</strong></button>
-							<button class="btn btn-default" id="mention" onclick="updateMention()"><strong><i class="fa fa-at" aria-hidden="true"></i>Mention</strong></button>
+							<button class="btn btn-default" id="hash" onclick="updateList('hash')"><strong><i class="fa fa-hashtag" aria-hidden="true"></i>Hash</strong></button>
+							<button class="btn btn-default" id="mention" onclick="updateList('mention')"><strong><i class="fa fa-at" aria-hidden="true"></i>Mention</strong></button>
 						</div>
 					</center>
 				</div>
 			</div>
-
 			<div class="panel-body">
 				<ul class="list-group" id="ranking">
-					<ol id="hashTopList" class="topList"></ol>
-					<ol id="mentionTopList" class="topList"></ol>
 				</ul>
+				<div id="timeLabel">Past 24hrs</div>
+				<input type="range"
+					 min ="1"
+					 max="168"
+					 step="1"
+					 value="24"
+					 id="pastTimeSelect"
+					 oninput="showTimeLabel(this.value)"
+					 onchange="refreshPastData()"
+					 style="width:100%">
+				</input>
 			</div>
+		</div>
+		<div id="trend">
+			draw trend line chart here
 		</div>
     </div>
 
@@ -120,15 +149,11 @@
         <div class="alert alert-info" id="tweetsbox"><span>Real-Time Tweets</span></div>
     </div>
 
-    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/func.js"></script>
     <script>
         jQuery(function ($) {
             //Global variables
-            var socket = io.connect();
-            var $tweetsbox = $('#tweetsbox');
-            var mapLoaded = false;
+			var $tweetsbox = $('#tweetsbox');
+			var $timeLabel = $('#timeLabel');
 
             $(document).ready(function () {
                 mapboxgl.accessToken = 'pk.eyJ1Ijoid2Vpc2hpIiwiYSI6ImNpbmc5cHV4bzFnOHJ1Zmx3ZGxpaGU0aGIifQ.L20RZ709ePgurmOeOYPwXg';
@@ -140,59 +165,30 @@
                 });
                 //here you try to ask the user position then setView to map
                 map.on('style.load', function () {
-                    registerTempLayer("marker_temp", "lightblue");
-                    for (var i = 0; i < 10; i++) {
-                        registerLayer("marker_" + i, listColor[i], true, 1 - (i/3)*0.2, 5-i/3);
-                        registerLayer("mention_" + i, listColor[i], true, 1 - (i/3)*0.2, 5-i/3);
+                    registerLayer("tweets_marker", "lightblue", true, 0.5, 2);
+					registerLayer("point_marker", "lightblue", true, 0.5, 2);
+
+                    for (var i = 0; i < limit; i++) {
+						var r;
+						if (i <= 2) {
+							r = 12 - 3*i;
+						} else {
+							r = 4;
+						}
+                        registerLayer("hash_" + i, listColor[i], true, 1, r);
+                        registerLayer("mention_" + i, listColor[i], true, 1, r);
                         map.setLayoutProperty("mention_" + i, 'visibility', 'none');
                     }
                     mapLoaded = true;
                     refreshPastData();
                 });
             });
-			
-            $("#title button.btn").on("click", function () {
-                if ($(this).attr('id') == 'mention') {
-                    for (var i = 0; i < 10; i++) {
-                        var layer = "marker_" + i;
-                        map.setLayoutProperty(layer, 'visibility', 'none');
-                    }
-                    for (var i = 0; i < 10; i++) {
-                        var layer = "mention_" + i;
-                        map.setLayoutProperty(layer, 'visibility', 'visible');
-                    }
-                }
-                if ($(this).attr('id') == 'hash') {
-                    for (var i = 0; i < 10; i++) {
-                        var layer = "mention_" + i;
-                        map.setLayoutProperty(layer, 'visibility', 'none');
-                    }
-                    for (var i = 0; i < 10; i++) {
-                        var layer = "marker_" + i;
-                        map.setLayoutProperty(layer, 'visibility', 'visible');
-                    }
-                }
-            });
 
-            function getEventTarget(e) {
-                e = e || window.event;
-                return e.target || e.srcElement;
-            }
-            var ul = document.getElementById('ranking');
-            ul.onclick = function (event) {
-                var target = getEventTarget(event);
-                console.log(target.innerHTML);
-                alert(target.innerHTML);
-            };
-
-            function refreshPastData() {
-                socket.emit('past data');
-            }
             var refreshId = setInterval(refreshPastData, 60000);
 
             socket.on('past data', function (data) {
                 procPastData(data);
-                updateHash();
+                updateList(selectedTab);
                 serveData();
             });
 
