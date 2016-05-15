@@ -127,12 +127,12 @@
 			<div class="panel-body">
 				<ul class="list-group" id="ranking">
 				</ul>
-				<div id="timeLabel">Past 24hrs</div>
+				<div id="timeLabel">Past 6hrs</div>
 				<input type="range"
 					 min ="1"
-					 max="168"
+					 max="24"
 					 step="1"
-					 value="24"
+					 value="6"
 					 id="pastTimeSelect"
 					 oninput="showTimeLabel(this.value)"
 					 onchange="refreshPastData()"
@@ -165,8 +165,8 @@
                 });
                 //here you try to ask the user position then setView to map
                 map.on('style.load', function () {
-                    registerLayer("tweets_marker", "lightblue", true, 0.5, 2);
-					registerLayer("point_marker", "lightblue", true, 0.5, 2);
+                    registerLayer("tweets_marker", "lightblue", false, 0.5, 2);
+					registerLayer("point_marker", "lightblue", false, 0.5, 2);
 
                     for (var i = 0; i < limit; i++) {
 						var r;
@@ -175,8 +175,8 @@
 						} else {
 							r = 4;
 						}
-                        registerLayer("hash_" + i, listColor[i], true, 1, r);
-                        registerLayer("mention_" + i, listColor[i], true, 1, r);
+                        registerLayer("hash_" + i, listColor[i], false, 1, r);
+                        registerLayer("mention_" + i, listColor[i], false, 1, r);
                         map.setLayoutProperty("mention_" + i, 'visibility', 'none');
                     }
                     mapLoaded = true;
@@ -192,7 +192,7 @@
                 serveData();
             });
 
-            function displayMsg(data) {//
+            function displayMsg(data) {
                 $tweetsbox.html('<span class="msg"><b>' + data.user + ': </b>' + data.text + ' ' + "</span><br/>");
             }
 

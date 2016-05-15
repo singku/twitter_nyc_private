@@ -83,7 +83,7 @@ twittClient.stream('statuses/filter', {locations: '-74,40,-73,41'}, function(str
                 return true;
             }
         })
-        //if (!valid) return;
+        if (!valid) return;
         var time = parseInt(tweet.timestamp_ms);
 		point["properties"] = {
 			"text":text

@@ -10,7 +10,7 @@ var tweets_temp = []; // Records data for real-time tweets
 var map;
 var animation = [[1, 0.5], [20, 0.8], [50, 0.4], [75, 0]];
 var selectedTab = "hash";
-var pastHrs = 24;
+var pastHrs = 6;
 
 function showTimeLabel(time) {
 	document.getElementById("timeLabel").innerHTML = 'Past ' +time+ 'hrs';
@@ -45,7 +45,7 @@ function updateList(tag) {
 	var base = hashRank[0][1] * 1.3;
 	for (var i = 0;i < limit; i++) {
 		// New <li> elements are created here and added to the <ul> element.
-		list.append('<div class="row"><div class="progress" onclick="filtMapData('+tag+','+i+')" ><div class="progress-bar progress-bar-warning " role="progressbar" style="width:'+arg[i][1]/base*100+'%; background-color:'+listColor[i]+';">'+
+		list.append('<div class="row"><div class="progress" onclick="filtMapData(\''+tag+'\','+i+')" ><div class="progress-bar progress-bar-warning " role="progressbar" style="width:'+arg[i][1]/base*100+'%; background-color:'+listColor[i]+';">'+
 		'<div class="progress-label">'+arg[i][0]+'</div></div>'+
 		'<div class="progress-num">'+arg[i][1]+'</div>'+
 		'</div></div>');
@@ -53,7 +53,7 @@ function updateList(tag) {
 }
 
 function filtMapData(tag, idx) {
-	var layer = (tag == 0 ?"hash_" :"mention_") + idx;
+	var layer = tag + "_" + idx;
 	for (var i = 0; i < limit; i++) {
 		map.setLayoutProperty("hash_"+i, 'visibility', "none");
 		map.setLayoutProperty("mention_"+i, 'visibility', "none");
@@ -69,8 +69,9 @@ function procPastData(data) {
 
 	var trendGridCnt = pastHrs*6;
 	var startTime = Date.now() - pastHrs * 3600 * 1000;
-	
+	tweets_temp = [];
 	for (var i = 0; i < data.length; i++) {
+		tweets_temp.push(data[i]);
 		var property = data[i].properties.keyword;
 		var itsTime = data[i].properties.time;
 		var idx = parseInt((itsTime - startTime) / (600*1000));
@@ -172,9 +173,8 @@ function serveData() {
 		var key = mentionRank[i][0];
 		ChangeLayerLastData(layer, keyLocSetToGeoArray(key, lastMentionData.get(key).locs));
 	}
+	ChangeLayerData("tweets_marker", tweets_temp);
 }
-
-
 
 function genGeoTweet(tweet) {
 	return {
@@ -255,7 +255,7 @@ function drawTrends(extraId) {
 		}
 	} else {
 		for (var i = 0; i < 3; i++) {
-			jsonData.push({////
+			jsonData.push({
 				"key": mentionRank[i],
 				"trends": lastMentionData.get(mentionRank[i]).trends	
 			});
