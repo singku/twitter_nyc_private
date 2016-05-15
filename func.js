@@ -19,7 +19,7 @@ function updateHash() {
 	var list = $('<ul/>').appendTo('#ranking');
 	for (var i = 0;i < 10; i++) {
 		// New <li> elements are created here and added to the <ul> element.
-		list.append('<div class="row"><div class="progress" style="background-color: #B0BEC5;"><div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:'+hashRank[i][1]/(hashRank[0][1]+5)*100+'%; background-color:'+listColor[i]+';">'+hashRank[i][0]+Math.round(hashRank[i][1]/(hashRank[0][1]+5)*100)+'%</div></div></div>');
+		list.append('<div class="row"><div class="progress" style="background-color: #B0BEC5;"><div class="progress-bar progress-bar-warning " role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:'+hashRank[i][1]/(hashRank[0][1]+5)*100+'%; background-color:'+listColor[i]+';">'+hashRank[i][0]+'</div></div></div>');
 	};
 }
 
@@ -33,7 +33,7 @@ function updateMention() {
 	var list = $('<ul/>').appendTo('#ranking');
 	for (var i = 0;i < 10; i++) {
 		// New <li> elements are created here and added to the <ul> element.
-		list.append('<div class="row"><div class="progress"><div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:'+mentionRank[i][1]+'%; background-color:'+listColor[i]+';">'+mentionRank[i][0]+'</div></div></div>');
+		list.append('<div class="row"><div class="progress"><div class="progress-bar progress-bar-warning " role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:'+mentionRank[i][1]+'%; background-color:'+listColor[i]+';">'+mentionRank[i][0]+'</div></div></div>');
 	};
 }
 
