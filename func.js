@@ -255,7 +255,7 @@ function drawTrends(extraId) {
 		}
 	} else {
 		for (var i = 0; i < 3; i++) {
-			jsonData.push({
+			jsonData.push({////
 				"key": mentionRank[i],
 				"trends": lastMentionData.get(mentionRank[i]).trends	
 			});
