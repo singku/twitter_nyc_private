@@ -95,10 +95,20 @@
             color: black;
             font-weight: bold;
         }
-        
-        .progress {
-            cursor: pointer;
+		.progress {
+			cursor:pointer;
+		}
+		
+		.axis path {
+            fill: none;
+            stroke: #777;
+            shape-rendering: crispEdges;
         }
+        .axis text {
+            font-family: Lato;
+            font-size: 13px;
+		}
+
     </style>
 </head>
 
@@ -134,12 +144,9 @@
                 </ul>
                 <div id="timeLabel">Past 6hrs</div>
                 <input type="range" min="1" max="24" step="1" value="6" id="pastTimeSelect" oninput="showTimeLabel(this.value)" onchange="refreshPastData()" style="width:100%">
-                <!--				</input>-->
             </div>
         </div>
-        <div id="trend">
-            draw trend line chart here
-        </div>
+        <svg id="trend" width="400", height="300"></svg>
     </div>
 
     <div class='row'>
@@ -162,7 +169,7 @@
                 });
                 //here you try to ask the user position then setView to map
                 map.on('style.load', function () {
-                    registerLayer("tweets_marker", "lightblue", false, 0, 2);
+                    //registerLayer("tweets_marker", "lightblue", false, 0, 2);
                     registerLayer("point_marker", "lightblue", false, 0.5, 2);
                     registerExtraLayer("text", "white");
                     map.setLayoutProperty("text", 'visibility', 'visible');

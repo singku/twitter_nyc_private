@@ -76,6 +76,11 @@ function procPastData(data) {
 		var property = data[i].properties.keyword;
 		var itsTime = data[i].properties.time;
 		var idx = parseInt((itsTime - startTime) / (600*1000));
+		if  (idx < 0) {
+			idx = 0;
+		} else if (idx >= trendGridCnt) {
+			idx = trendGridCnt-1;
+		}
 
 		if (data[i].properties.type == "mention") {
 			if (mentionRankNsort[property] === undefined) {
@@ -90,12 +95,16 @@ function procPastData(data) {
 				locs = lastMentionData.get(property).locs;
 				trends = lastMentionData.get(property).trends;
 				locs.push(data[i].geometry.coordinates);
-				trends[idx]++;
+				trends[idx].cnt++;
 			} else {
 				for (var k = 0; k < trendGridCnt; k++) {
-					trends[k] = 0;
+					trends[k] = {
+						"idx": k,
+						"cnt": 0
+					};
+
 				}
-				trends[idx]++;
+				trends[idx].cnt++;
 				locs.push(data[i].geometry.coordinates);
 				lastMentionData.set(property, {"locs":locs, "trends":trends});
 			}
@@ -114,12 +123,15 @@ function procPastData(data) {
 				locs = lastHashData.get(property).locs;
 				trends = lastHashData.get(property).trends;
 				locs.push(data[i].geometry.coordinates);
-				trends[idx]++;
+				trends[idx].cnt++;
 			} else {
 				for (var k = 0; k < trendGridCnt; k++) {
-					trends[k] = 0;
+					trends[k] = {
+                        "idx": k,
+                        "cnt": 0
+                    }
 				}
-				trends[idx]++;
+				trends[idx].cnt++;
 				locs.push(data[i].geometry.coordinates);
 				lastHashData.set(property, {"locs":locs, "trends":trends});
 			}
@@ -169,7 +181,6 @@ function serveData() {
 		var layer = "hash_" + i;
 		var key = hashRank[i][0];
         TopHash += keyLocSetToGeoArray(key, lastHashData.get(key).locs);
-        console.log(TopHash)
 		ChangeLayerLastData(layer, keyLocSetToGeoArray(key, lastHashData.get(key).locs));
 	}
     ChangeLayerLastData("text", TopHash);
@@ -178,7 +189,8 @@ function serveData() {
 		var key = mentionRank[i][0];
 		ChangeLayerLastData(layer, keyLocSetToGeoArray(key, lastMentionData.get(key).locs));
 	}
-	ChangeLayerData("tweets_marker", tweets_temp);
+	//ChangeLayerData("tweets_marker", tweets_temp);
+    drawTrends(0);
 }
 
 function genGeoTweet(tweet) {
@@ -267,11 +279,10 @@ function registerExtraLayer(name, color) {
 
 function showPoint(tweet) {
 	tweets_temp.push(tweet);
-	ChangeLayerData("tweets_marker", tweets_temp);
+	//ChangeLayerData("tweets_marker", tweets_temp);
 	ChangeLayerData("point_marker", [tweet]);
 	animatePoint("point_marker", Date.now());
 }
-
 
 function drawTrends(extraId) {
 	var jsonData = [];
@@ -279,27 +290,76 @@ function drawTrends(extraId) {
 		for (var i = 0; i < 3; i++) {
 			jsonData.push({
 				"key": hashRank[i],
-				"trends": lastHashData.get(hashRank[i]).trends	
+				"trends": lastHashData.get(hashRank[i][0]).trends
 			});
 		}
 		if (extraId < limit && extraId >= 3) {
 			jsonData.push({
 				"key": hashRank[extraId],
-				"trends": lastHashData.get(hashRank[extraId]).trends	
+				"trends": lastHashData.get(hashRank[extraId][0]).trends	
 			});
 		}
 	} else {
 		for (var i = 0; i < 3; i++) {
 			jsonData.push({
 				"key": mentionRank[i],
-				"trends": lastMentionData.get(mentionRank[i]).trends	
+				"trends": lastMentionData.get(mentionRank[i][0]).trends	
 			});
 		}
 		if (extraId < limit && extraId >= 3) {
 			jsonData.push({
 				"key": mentionRank[extraId],
-				"trends": lastMentionData.get(mentionRank[extraId]).trends	
+				"trends": lastMentionData.get(mentionRank[extraId][0]).trends	
 			});
 		}			
+	}
+	
+	d3.selectAll("path").remove();
+	d3.selectAll("#axis").remove();
+	
+	var vis = d3.select("#trend");
+	
+	WIDTH = 400,
+	HEIGHT = 300,
+	MARGINS = {
+		top: 50,
+		right: 20,
+		bottom: 20,
+		left: 50
+	},
+	xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, pastHrs*6]),
+	yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain(d3.extent(jsonData[0].trends, function(d) { return d.cnt })),
+	xAxis = d3.svg.axis()
+	.scale(xScale),
+	yAxis = d3.svg.axis()
+	.scale(yScale)
+	.orient("left");
+
+	vis.append("svg:g")
+		.attr("class", "x axis")
+		.attr("id", "axis")
+		.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")
+		.call(xAxis);
+	vis.append("svg:g")
+		.attr("class", "y axis")
+		.attr("id", "axis")
+		.attr("transform", "translate(" + (MARGINS.left) + ",0)")
+		.call(yAxis);
+		
+	var lineGen = d3.svg.line()
+		.x(function(d) {
+			return xScale(d.idx);
+		})
+		.y(function(d) {
+			return yScale(d.cnt);
+		})
+		.interpolate("basis");
+		
+	for (var i = 0; i < jsonData.length; i++) {
+		vis.append('svg:path')
+		.attr('d', lineGen(jsonData[i].trends))
+		.attr('stroke', listColor[i])
+		.attr('stroke-width', 2)
+		.attr('fill', 'none');
 	}
 }
