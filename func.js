@@ -2,32 +2,39 @@ var hashRank = []; //descending sorted array with every element like [key, value
 var mentionRank = []; //descending sorted array ...
 var lastHashData = new Map(); // [key,value] value is set of coords
 var lastMentionData = new Map();
-//var listColor = ["#c84337", "#ce316b", "#e88617", "#ddbe22", "#cdd926", "#a1be41", "#47bc43", "#25c8da", "#3f88bf", "#474fb8"];
-//var listColor = ["#880E4F", "#AD1457", "#C2185B", "#D81B60", "#E91E63", "#EC407A", "#F06292", "#F48FB1", "#F8BBD0", "#FCE4EC"];
 var listColor = ["#b54a4a", "#b4704b", "#b4964b", "#8fba45", "#5bb946", "#4bb470", "#4cafb3", "#4894b7", "#5475ab", "#6353ac"];
-
 var tweets_temp = []; // Records data for real-time tweets
 var map;
 var point_count = 0;
 var animation = [[1, 0.5], [20, 0.8], [50, 0.4], [75, 0]];
 
 function updateHash() {
-            $('#ranking').empty();
-               var list = $('<ul/>').appendTo('#ranking');
-            for (var i = 0;i < 10; i++) {
-                // New <li> elements are created here and added to the <ul> element.
-                list.append('<div class="row"><div class="progress" style="background-color: #B0BEC5;"><div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:'+hashRank[i][1]/(hashRank[0][1]+5)*100+'%; background-color:'+listColor[i]+';">'+hashRank[i][0]+Math.round(hashRank[i][1]/(hashRank[0][1]+5)*100)+'%</div></div></div>');
-            };
+    document.getElementById("hash").style.backgroundColor = "#5592aa";
+    document.getElementById("hash").style.color = "#FFF";
+    document.getElementById("mention").style.backgroundColor = "rgba(52, 152, 219, 0)";
+    document.getElementById("mention").style.color = "#5592aa";
+
+
+	$('#ranking').empty();
+	var list = $('<ul/>').appendTo('#ranking');
+	for (var i = 0;i < 10; i++) {
+		// New <li> elements are created here and added to the <ul> element.
+		list.append('<div class="row"><div class="progress" style="background-color: #B0BEC5;"><div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:'+hashRank[i][1]/(hashRank[0][1]+5)*100+'%; background-color:'+listColor[i]+';">'+hashRank[i][0]+Math.round(hashRank[i][1]/(hashRank[0][1]+5)*100)+'%</div></div></div>');
+	};
 }
 
 function updateMention() {
-        $('#ranking').empty();
-               var list = $('<ul/>').appendTo('#ranking');
-            for (var i = 0;i < 10; i++) {
-                // New <li> elements are created here and added to the <ul> element.
-                list.append('<div class="row"><div class="progress"><div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:'+mentionRank[i][1]+'%; background-color:'+listColor[i]+';">'+mentionRank[i][0]+'</div></div></div>');
-            };
+    document.getElementById("mention").style.backgroundColor = "#5592aa";
+    document.getElementById("mention").style.color = "#FFF";
+    document.getElementById("hash").style.backgroundColor = "rgba(52, 152, 219, 0)";
+    document.getElementById("hash").style.color = "#5592aa";
 
+	$('#ranking').empty();			
+	var list = $('<ul/>').appendTo('#ranking');
+	for (var i = 0;i < 10; i++) {
+		// New <li> elements are created here and added to the <ul> element.
+		list.append('<div class="row"><div class="progress"><div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:'+mentionRank[i][1]+'%; background-color:'+listColor[i]+';">'+mentionRank[i][0]+'</div></div></div>');
+	};
 }
 
 function procPastData(data) {
