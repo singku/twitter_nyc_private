@@ -12,6 +12,12 @@ var map;
 var animation = [[1, 0.5], [20, 0.8], [30, 0.4], [50, 0]];
 var selectedTab = "hash";
 var pastHrs = 6;
+var trendMax = 0;
+
+var cScale = d3.scale.category10();
+for (var i = 0; i < 10; i++) {
+	//listColor[i] = cScale(i);
+}
 
 function showTimeLabel(time) {
 	document.getElementById("timeLabel").innerHTML = 'Past ' +time+ 'hrs';
@@ -60,6 +66,7 @@ function filtMapData(tag, idx) {
 		map.setLayoutProperty("mention_"+i, 'visibility', "none");
 	}
 	map.setLayoutProperty(layer,'visibility', "visible");
+	drawTrends(idx);
 }
 
 function procPastData(data) {
@@ -105,6 +112,8 @@ function procPastData(data) {
 
 				}
 				trends[idx].cnt++;
+				if (trends[idx].cnt > trendMax) trendMax = trends[idx].cnt;
+				
 				locs.push(data[i].geometry.coordinates);
 				lastMentionData.set(property, {"locs":locs, "trends":trends});
 			}
@@ -132,6 +141,7 @@ function procPastData(data) {
                     }
 				}
 				trends[idx].cnt++;
+				if (trends[idx].cnt > trendMax) trendMax = trends[idx].cnt;
 				locs.push(data[i].geometry.coordinates);
 				lastHashData.set(property, {"locs":locs, "trends":trends});
 			}
@@ -183,14 +193,14 @@ function serveData() {
         TopHash += keyLocSetToGeoArray(key, lastHashData.get(key).locs);
 		ChangeLayerLastData(layer, keyLocSetToGeoArray(key, lastHashData.get(key).locs));
 	}
-    ChangeLayerLastData("text", TopHash);
+    //ChangeLayerLastData("text", TopHash);
 	for (var i = 0; i < limit; i++) {
 		var layer = "mention_" + i;
 		var key = mentionRank[i][0];
 		ChangeLayerLastData(layer, keyLocSetToGeoArray(key, lastMentionData.get(key).locs));
 	}
 	//ChangeLayerData("tweets_marker", tweets_temp);
-    drawTrends(0);
+    drawTrends(-1);
 }
 
 function genGeoTweet(tweet) {
@@ -286,32 +296,40 @@ function showPoint(tweet) {
 
 function drawTrends(extraId) {
 	var jsonData = [];
+	var yExtend = [];
 	if (selectedTab == "hash") {
-		for (var i = 0; i < 3; i++) {
-			jsonData.push({
-				"key": hashRank[i],
-				"trends": lastHashData.get(hashRank[i][0]).trends
-			});
-		}
-		if (extraId < limit && extraId >= 3) {
+		if (extraId != -1) {
 			jsonData.push({
 				"key": hashRank[extraId],
 				"trends": lastHashData.get(hashRank[extraId][0]).trends	
 			});
+			yExtend.push(lastHashData.get(hashRank[extraId][0]).trends);	
+		} else {
+			for (var i = 0; i < 3; i++) {
+				jsonData.push({
+					"key": hashRank[i],
+					"trends": lastHashData.get(hashRank[i][0]).trends
+				});
+				yExtend.push(lastHashData.get(hashRank[i][0]).trends);
+			}			
 		}
+
 	} else {
-		for (var i = 0; i < 3; i++) {
-			jsonData.push({
-				"key": mentionRank[i],
-				"trends": lastMentionData.get(mentionRank[i][0]).trends	
-			});
-		}
-		if (extraId < limit && extraId >= 3) {
+		if (extraId != -1) {
+			for (var i = 0; i < 3; i++) {
+				jsonData.push({
+					"key": mentionRank[i],
+					"trends": lastMentionData.get(mentionRank[i][0]).trends	
+				});
+				yExtend.push(lastMentionData.get(mentionRank[i][0]).trends);
+			}			
+		} else {
 			jsonData.push({
 				"key": mentionRank[extraId],
 				"trends": lastMentionData.get(mentionRank[extraId][0]).trends	
 			});
-		}			
+			yExtend.push(lastMentionData.get(mentionRank[extraId][0]).trends);			
+		}
 	}
 	
 	d3.selectAll("path").remove();
@@ -320,15 +338,15 @@ function drawTrends(extraId) {
 	var vis = d3.select("#trend");
 	
 	WIDTH = 400,
-	HEIGHT = 300,
+	HEIGHT = 250,
 	MARGINS = {
 		top: 50,
 		right: 20,
-		bottom: 20,
+		bottom: 50,
 		left: 50
 	},
-	xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0, pastHrs*6]),
-	yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain(d3.extent(jsonData[0].trends, function(d) { return d.cnt })),
+	xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([pastHrs*6, 0]),
+	yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain(d3.extent(d3.merge(yExtend), function(d) {return d.cnt;})),
 	xAxis = d3.svg.axis()
 	.scale(xScale),
 	yAxis = d3.svg.axis()
@@ -358,7 +376,7 @@ function drawTrends(extraId) {
 	for (var i = 0; i < jsonData.length; i++) {
 		vis.append('svg:path')
 		.attr('d', lineGen(jsonData[i].trends))
-		.attr('stroke', listColor[i])
+		.attr('stroke', extraId==-1?listColor[i]: listColor[extraId])
 		.attr('stroke-width', 2)
 		.attr('fill', 'none');
 	}
