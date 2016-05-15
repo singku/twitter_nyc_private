@@ -168,8 +168,8 @@ function serveData() {
 	for (var i = 0; i < limit; i++) {
 		var layer = "hash_" + i;
 		var key = hashRank[i][0];
-        var temp += keyLocSetToGeoArray(key, lastHashData.get(key).locs);
-        console.log(temp);
+        TopHash += keyLocSetToGeoArray(key, lastHashData.get(key).locs);
+        console.log(TopHash)
 		ChangeLayerLastData(layer, keyLocSetToGeoArray(key, lastHashData.get(key).locs));
 	}
     ChangeLayerLastData("text", TopHash);
