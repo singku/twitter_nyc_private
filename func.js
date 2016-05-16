@@ -52,7 +52,7 @@ function updateList(tag) {
 	var base = arg[0][1] * 1.3;
 	for (var i = 0;i < limit; i++) {
 		// New <li> elements are created here and added to the <ul> element.
-		list.append('<div class="row"><div class="progress" onclick="filtMapData(\''+tag+'\','+i+')" ><div class="progress-bar progress-bar-warning " role="progressbar" style="width:'+arg[i][1]/base*100+'%; background-color:'+listColor[i]+';">'+
+		list.append('<div class="row" style="margin:0;"><div class="progress" onclick="filtMapData(\''+tag+'\','+i+')" ><div class="progress-bar progress-bar-warning " role="progressbar" style="width:'+arg[i][1]/base*100+'%; background-color:'+listColor[i]+';">'+
 		'<div class="progress-label">'+arg[i][0]+'</div></div>'+
 		'<div class="progress-num">'+arg[i][1]+'</div>'+
 		'</div></div>');
@@ -339,16 +339,16 @@ function drawTrends(extraId) {
 	
 	var vis = d3.select("#trend");
 	
-	WIDTH = 400,
-	HEIGHT = 250,
+	WIDTH = 376,
+	HEIGHT = 270,
 	MARGINS = {
 		top: 50,
-		right: 30,
+		right: 40,
 		bottom: 50,
-		left: 20
+		left: 30
 	},
-	xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([pastHrs*6, 0]),
-	yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain(d3.extent(d3.merge(yExtend), function(d) {return d.cnt;})),
+	xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([pastHrs*6,0]),
+	yScale = d3.scale.linear().range([HEIGHT-MARGINS.top, MARGINS.bottom]).domain(d3.extent(d3.merge(yExtend), function(d) {return d.cnt;})),
 	
 	xAxis = d3.svg.axis()
 	.tickFormat(d3.format("d"))
@@ -357,19 +357,21 @@ function drawTrends(extraId) {
 	yAxis = d3.svg.axis()
 	.scale(yScale)
 	.tickFormat(d3.format("d"))
+    .ticks(7)
 	.orient("right");
 
 	vis.append("svg:g")
 		.attr("class", "x axis")
 		.attr("id", "axis")
 		.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")
-		.call(xAxis);
+		.call(xAxis)
+
+    
 	vis.append("svg:g")
 		.attr("class", "y axis")
 		.attr("id", "axis")
-		.attr("transform", "translate(" + (WIDTH-MARGINS.right) + ", 0)")
+		.attr("transform", "translate(" + (WIDTH-MARGINS.right) + ",0)")
 		.call(yAxis);
-		
 		
 	var lineGen = d3.svg.line()
 		.x(function(d) {
@@ -387,16 +389,24 @@ function drawTrends(extraId) {
 		.attr('stroke-width', 2)
 		.attr('fill', 'none');
 	}
-
+	
 	vis.append("text")
 		.attr("id", "xlabel")
 		.attr("text-anchor", "middle")  
-		.attr("transform", "translate("+ (WIDTH-3) +","+(HEIGHT/2-30)+")rotate(-90)")  
+		.attr("transform", "translate("+ (WIDTH-5) +","+(HEIGHT/2-30)+")rotate(-90)")  
 		.text("Freqency");
 
 	vis.append("text")
 		.attr("id", "xlabel")
 		.attr("text-anchor", "middle")  
-		.attr("transform", "translate("+ (WIDTH/2) +","+(HEIGHT-20)+")")
+		.attr("transform", "translate("+ (WIDTH/2) +","+(HEIGHT-15)+")")
 		.text("Past Time (unit: 10min)");
+
+	vis.append("text")
+		.attr("id", "xlabel")
+		.attr("text-anchor", "middle")  
+		.attr("transform", "translate("+ (WIDTH/4) +","+(MARGINS.top+30)+")")
+		.text("Key Trends")
+        .style("font-size", "18px")
+        .style("stroke", "red");
 }

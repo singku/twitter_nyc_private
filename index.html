@@ -97,6 +97,7 @@
         }
 		.progress {
 			cursor:pointer;
+            margin-bottom: 4%;
 		}
 		
         .axis text {
@@ -117,6 +118,10 @@
 			stroke-width: 2;
 			shape-rendering: crispEdges;
 		}			
+        #trend {
+            padding: 0;
+            margin-top: 0;
+        }
     </style>
 </head>
 
@@ -135,26 +140,27 @@
     <div id='map'></div>
     <!--<i id="refresh" class="fa fa-refresh fa-2x" aria-hidden="true" style="position:absolute;"></i>-->
 
-    <div style="position: absolute; right: 0; width: 25%; height: 60%;">
+    <div style="position: absolute; right: 0; width: 25%; height: 70%;">
         <div class="panel panel-default">
-            <div class="panel-heading" style="background-color:rgba(121, 134, 134, 0.2); ">
+            <div class="panel-heading" style="background-color:rgba(121, 134, 134, 0.2); height: 12%;">
                 <div class="row">
                     <center>
                         <div class="btn-group" id="title">
-                            <button class="btn btn-default" id="hash" onclick="updateList('hash')"><strong><i class="fa fa-hashtag" aria-hidden="true"></i>Hash</strong></button>
-                            <button class="btn btn-default" id="mention" onclick="updateList('mention')"><strong><i class="fa fa-at" aria-hidden="true"></i>Mention</strong></button>
+                            <button class="btn btn-default" id="hash" style="height:100%;" onclick="updateList('hash')"><strong><i class="fa fa-hashtag" aria-hidden="true"> 	</i>Hash</strong></button>
+                            <button class="btn btn-default" id="mention" style="height:100%;" onclick="updateList('mention')"><strong><i class="fa fa-at" aria-hidden="true"></i>Mention</strong></button>
                         </div>
                     </center>
                 </div>
             </div>
-            <div class="panel-body">
-                <ul class="list-group" id="ranking">
+            <div class="panel-body" >
+                <ul class="list-group" id="ranking" style="margin-bottom: 0;" >
                 </ul>
-                <div id="timeLabel">Past 6hrs</div>
+                <div id="timeLabel" >Past 6hrs</div>
                 <input type="range" min="1" max="24" step="1" value="6" id="pastTimeSelect" oninput="showTimeLabel(this.value)" onchange="refreshPastData()" style="width:100%">
             </div>
         </div>
-        <svg id="trend" width="400", height="250">Trend</svg>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<svg id="trend" width="376", height="270" >Trend</svg>
     </div>
 
     <div class='row'>
