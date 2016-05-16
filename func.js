@@ -49,7 +49,7 @@ function updateList(tag) {
 				
 	$('#ranking').empty();
 	var list = $('<ul/>').appendTo('#ranking');
-	var base = hashRank[0][1] * 1.3;
+	var base = arg[0][1] * 1.3;
 	for (var i = 0;i < limit; i++) {
 		// New <li> elements are created here and added to the <ul> element.
 		list.append('<div class="row"><div class="progress" onclick="filtMapData(\''+tag+'\','+i+')" ><div class="progress-bar progress-bar-warning " role="progressbar" style="width:'+arg[i][1]/base*100+'%; background-color:'+listColor[i]+';">'+
@@ -57,6 +57,7 @@ function updateList(tag) {
 		'<div class="progress-num">'+arg[i][1]+'</div>'+
 		'</div></div>');
 	};
+	drawTrends(-1);
 }
 
 function filtMapData(tag, idx) {
@@ -315,7 +316,7 @@ function drawTrends(extraId) {
 		}
 
 	} else {
-		if (extraId != -1) {
+		if (extraId == -1) {
 			for (var i = 0; i < 3; i++) {
 				jsonData.push({
 					"key": mentionRank[i],
@@ -334,6 +335,7 @@ function drawTrends(extraId) {
 	
 	d3.selectAll("path").remove();
 	d3.selectAll("#axis").remove();
+	d3.selectAll("#xlabel").remove();
 	
 	var vis = d3.select("#trend");
 	
@@ -341,17 +343,21 @@ function drawTrends(extraId) {
 	HEIGHT = 250,
 	MARGINS = {
 		top: 50,
-		right: 20,
+		right: 30,
 		bottom: 50,
-		left: 50
+		left: 20
 	},
 	xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([pastHrs*6, 0]),
 	yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain(d3.extent(d3.merge(yExtend), function(d) {return d.cnt;})),
+	
 	xAxis = d3.svg.axis()
+	.tickFormat(d3.format("d"))
 	.scale(xScale),
+	
 	yAxis = d3.svg.axis()
 	.scale(yScale)
-	.orient("left");
+	.tickFormat(d3.format("d"))
+	.orient("right");
 
 	vis.append("svg:g")
 		.attr("class", "x axis")
@@ -361,12 +367,13 @@ function drawTrends(extraId) {
 	vis.append("svg:g")
 		.attr("class", "y axis")
 		.attr("id", "axis")
-		.attr("transform", "translate(" + (MARGINS.left) + ",0)")
+		.attr("transform", "translate(" + (WIDTH-MARGINS.right) + ", 0)")
 		.call(yAxis);
+		
 		
 	var lineGen = d3.svg.line()
 		.x(function(d) {
-			return xScale(d.idx);
+			return xScale((pastHrs*6 - d.idx));
 		})
 		.y(function(d) {
 			return yScale(d.cnt);
@@ -380,4 +387,16 @@ function drawTrends(extraId) {
 		.attr('stroke-width', 2)
 		.attr('fill', 'none');
 	}
+
+	vis.append("text")
+		.attr("id", "xlabel")
+		.attr("text-anchor", "middle")  
+		.attr("transform", "translate("+ (WIDTH-3) +","+(HEIGHT/2-30)+")rotate(-90)")  
+		.text("Freqency");
+
+	vis.append("text")
+		.attr("id", "xlabel")
+		.attr("text-anchor", "middle")  
+		.attr("transform", "translate("+ (WIDTH/2) +","+(HEIGHT-20)+")")
+		.text("Past Time (unit: 10min)");
 }

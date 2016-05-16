@@ -99,16 +99,24 @@
 			cursor:pointer;
 		}
 		
-		.axis path {
-            fill: none;
-            stroke: #777;
-            shape-rendering: crispEdges;
-        }
         .axis text {
             font-family: Lato;
             font-size: 13px;
 		}
-
+		.tick {
+			font-size: 12
+		}
+		.tick line {
+			stroke: #ccc
+		}
+		
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: #777;
+			stroke-width: 2;
+			shape-rendering: crispEdges;
+		}			
     </style>
 </head>
 
@@ -169,7 +177,7 @@
                 });
                 //here you try to ask the user position then setView to map
                 map.on('style.load', function () {
-                    registerLayer("tweets_marker", "lightblue", false, 0, 2);
+                    //registerLayer("tweets_marker", "lightblue", false, 0.2, 2);
                     registerLayer("point_marker", "lightblue", false, 0.5, 2);
                     //registerExtraLayer("text", "white");
                     //map.setLayoutProperty("text", 'visibility', 'visible');

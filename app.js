@@ -25,7 +25,7 @@ function readJson(file) {
     return readJsonFileSync(filepath);
 }
 
-var manhattanLoc = readJson('manhattan.geojson');
+var manhattanLoc = readJson('new-york-city-boroughs.geojson');
 
 mongoose.connect('mongodb://localhost/twitter', function(err) {
     if (err) {
