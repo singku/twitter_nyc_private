@@ -189,11 +189,18 @@
                     //map.setLayoutProperty("text", 'visibility', 'visible');
                     for (var i = limit - 1; i >= 0; i--) {
                         var r = 4;
-						//if (i == 0) r = 14;
-						//if (i == 1) r = 8;
-						//if (i == 2) r = 6;
-                        registerLayer("hash_" + i, listColor[i], false, 1, r);
-                        registerLayer("mention_" + i, listColor[i], false, 1, r);
+                        var opacity = 1;
+                        var cluster = false;
+                        if (useStyle2) {
+						    if (i == 0) {r = 14;}
+						    else if (i == 1) { r = 9;}
+						    else if (i == 2) {r = 6;}
+							r = 4;
+                            cluster = false;
+                        }
+
+                        registerLayer("hash_" + i, listColor[i], cluster, opacity, r);
+                        registerLayer("mention_" + i, listColor[i], cluster, opacity, r);
                         map.setLayoutProperty("mention_" + i, 'visibility', 'none');
                     }
                     mapLoaded = true;

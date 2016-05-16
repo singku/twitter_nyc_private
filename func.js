@@ -13,10 +13,13 @@ var animation = [[1, 0.5], [20, 0.8], [30, 0.4], [50, 0]];
 var selectedTab = "hash";
 var pastHrs = 6;
 var trendMax = 0;
+var useStyle2 = 0;
 
 var cScale = d3.scale.category10();
 for (var i = 0; i < 10; i++) {
-	//listColor[i] = cScale(i);
+    if (useStyle2) {
+        listColor[i] = cScale(i*7);
+    }
 }
 
 function showTimeLabel(time) {
