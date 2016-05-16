@@ -357,12 +357,25 @@ function drawTrends(extraId) {
 		.attr("class", "x axis")
 		.attr("id", "axis")
 		.attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")
-		.call(xAxis);
+		.call(xAxis)
+        .append("text")
+      .attr("x", 280)
+      .attr("dy", "0")
+      .style("text-anchor", "end")
+      .text("Time(*10min)");
+    
 	vis.append("svg:g")
 		.attr("class", "y axis")
 		.attr("id", "axis")
 		.attr("transform", "translate(" + (MARGINS.left) + ",0)")
-		.call(yAxis);
+		.call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Amount");
+        
 		
 	var lineGen = d3.svg.line()
 		.x(function(d) {
