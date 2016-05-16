@@ -52,7 +52,7 @@ function updateList(tag) {
 	var base = hashRank[0][1] * 1.3;
 	for (var i = 0;i < limit; i++) {
 		// New <li> elements are created here and added to the <ul> element.
-		list.append('<div class="row"><div class="progress" onclick="filtMapData(\''+tag+'\','+i+')" ><div class="progress-bar progress-bar-warning " role="progressbar" style="width:'+arg[i][1]/base*100+'%; background-color:'+listColor[i]+';">'+
+		list.append('<div class="row" style="margin:0;"><div class="progress" onclick="filtMapData(\''+tag+'\','+i+')" ><div class="progress-bar progress-bar-warning " role="progressbar" style="width:'+arg[i][1]/base*100+'%; background-color:'+listColor[i]+';">'+
 		'<div class="progress-label">'+arg[i][0]+'</div></div>'+
 		'<div class="progress-num">'+arg[i][1]+'</div>'+
 		'</div></div>');
@@ -337,15 +337,15 @@ function drawTrends(extraId) {
 	
 	var vis = d3.select("#trend");
 	
-	WIDTH = 400,
-	HEIGHT = 250,
+	WIDTH = 300,
+	HEIGHT = 150,
 	MARGINS = {
-		top: 50,
+		top: 10,
 		right: 20,
-		bottom: 50,
+		bottom: 10,
 		left: 50
 	},
-	xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([pastHrs*6, 0]),
+	xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([0,pastHrs*6]),
 	yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain(d3.extent(d3.merge(yExtend), function(d) {return d.cnt;})),
 	xAxis = d3.svg.axis()
 	.scale(xScale),
