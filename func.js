@@ -15,6 +15,18 @@ var pastHrs = 6;
 var trendMax = 0;
 var useStyle2 = 0;
 
+function GetRequest() { 
+	var url = location.search; 
+	if (url.indexOf("?") != -1) {  
+		var str = url.substr(1); 
+		strs = str.split("=");  
+		if (strs[1]) {
+			useStyle2 = 1;
+		}
+	}
+}
+
+GetRequest();
 var cScale = d3.scale.category10();
 for (var i = 0; i < 10; i++) {
     if (useStyle2) {
@@ -304,14 +316,14 @@ function drawTrends(extraId) {
 	if (selectedTab == "hash") {
 		if (extraId != -1) {
 			jsonData.push({
-				"key": hashRank[extraId],
+				"key": hashRank[extraId][0],
 				"trends": lastHashData.get(hashRank[extraId][0]).trends	
 			});
 			yExtend.push(lastHashData.get(hashRank[extraId][0]).trends);	
 		} else {
 			for (var i = 0; i < 3; i++) {
 				jsonData.push({
-					"key": hashRank[i],
+					"key": hashRank[i][0],
 					"trends": lastHashData.get(hashRank[i][0]).trends
 				});
 				yExtend.push(lastHashData.get(hashRank[i][0]).trends);
@@ -322,14 +334,14 @@ function drawTrends(extraId) {
 		if (extraId == -1) {
 			for (var i = 0; i < 3; i++) {
 				jsonData.push({
-					"key": mentionRank[i],
+					"key": mentionRank[i][0],
 					"trends": lastMentionData.get(mentionRank[i][0]).trends	
 				});
 				yExtend.push(lastMentionData.get(mentionRank[i][0]).trends);
 			}			
 		} else {
 			jsonData.push({
-				"key": mentionRank[extraId],
+				"key": mentionRank[extraId][0],
 				"trends": lastMentionData.get(mentionRank[extraId][0]).trends	
 			});
 			yExtend.push(lastMentionData.get(mentionRank[extraId][0]).trends);			
@@ -341,7 +353,7 @@ function drawTrends(extraId) {
 	d3.selectAll("#xlabel").remove();
 	
 	var vis = d3.select("#trend");
-	
+	var
 	WIDTH = 376,
 	HEIGHT = 270,
 	MARGINS = {
@@ -349,15 +361,16 @@ function drawTrends(extraId) {
 		right: 40,
 		bottom: 50,
 		left: 30
-	},
-	xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([pastHrs*6,0]),
-	yScale = d3.scale.linear().range([HEIGHT-MARGINS.top, MARGINS.bottom]).domain(d3.extent(d3.merge(yExtend), function(d) {return d.cnt;})),
+	};
+	var xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([pastHrs*6,0]);
+	var range = d3.extent(d3.merge(yExtend), function(d) {return d.cnt;});
+	var yScale = d3.scale.linear().range([HEIGHT-MARGINS.top, MARGINS.bottom]).domain([range[0],range[1]*1.2]);
 	
-	xAxis = d3.svg.axis()
+	var xAxis = d3.svg.axis()
 	.tickFormat(d3.format("d"))
-	.scale(xScale),
+	.scale(xScale);
 	
-	yAxis = d3.svg.axis()
+	var yAxis = d3.svg.axis()
 	.scale(yScale)
 	.tickFormat(d3.format("d"))
     .ticks(7)
@@ -391,6 +404,13 @@ function drawTrends(extraId) {
 		.attr('stroke', extraId==-1?listColor[i]: listColor[extraId])
 		.attr('stroke-width', 2)
 		.attr('fill', 'none');
+		
+		vis.append("text")
+		.attr("id", "xlabel")
+		.attr("text-anchor", "left")
+		.text(jsonData[i].key)
+		.style("fill", extraId==-1?listColor[i]: listColor[extraId])
+		.attr("transform", "translate("+ (MARGINS.left) +","+(MARGINS.top+15*(i+1))+")");
 	}
 	
 	vis.append("text")
@@ -408,8 +428,8 @@ function drawTrends(extraId) {
 	vis.append("text")
 		.attr("id", "xlabel")
 		.attr("text-anchor", "middle")  
-		.attr("transform", "translate("+ (WIDTH/4) +","+(MARGINS.top+30)+")")
-		.text("Key Trends")
+		.attr("transform", "translate("+ (WIDTH/2) +","+(MARGINS.top-15)+")")
+		.text("Keys' Trend")
         .style("font-size", "18px")
         .style("stroke", "red");
 }
