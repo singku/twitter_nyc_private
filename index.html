@@ -121,6 +121,9 @@
         #trend {
             padding: 0;
             margin-top: 0;
+            position: absolute;
+            right: 5px;
+            bottom: 2px;
         }
     </style>
 </head>
@@ -159,10 +162,12 @@
                 <input type="range" min="1" max="24" step="1" value="6" id="pastTimeSelect" oninput="showTimeLabel(this.value)" onchange="refreshPastData()" style="width:100%">
             </div>
         </div>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<svg id="trend" width="376", height="270" >Trend</svg>
+ 
+		
     </div>
-
+<div class="row">
+    <svg id="trend" width="376", height="270" >Trend</svg>
+    </div>
     <div class='row'>
         <div class="alert alert-info" id="tweetsbox"><span>Real-Time Tweets</span></div>
     </div>
