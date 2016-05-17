@@ -31,7 +31,7 @@
             position: absolute;
             top: 50px;
             bottom: 0;
-            width: 75%;
+            width: 65%;
         }
         
         button.btn-default:focus {
@@ -86,7 +86,7 @@
         
         .progress-label {
             float: left;
-            color: black;
+            color: #FFF;
             font-weight: bold;
         }
         
@@ -95,35 +95,39 @@
             color: black;
             font-weight: bold;
         }
-		.progress {
-			cursor:pointer;
+        
+        .progress {
+            cursor: pointer;
             margin-bottom: 4%;
-		}
-		
+        }
+        
         .axis text {
             font-family: Lato;
             font-size: 13px;
-		}
-		.tick {
-			font-size: 12
-		}
-		.tick line {
-			stroke: #ccc
-		}
-		
-		.axis path,
-		.axis line {
-			fill: none;
-			stroke: #777;
-			stroke-width: 2;
-			shape-rendering: crispEdges;
-		}			
+        }
+        
+        .tick {
+            font-size: 12
+        }
+        
+        .tick line {
+            stroke: #ccc
+        }
+        
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #777;
+            stroke-width: 2;
+            shape-rendering: crispEdges;
+        }
+        
         #trend {
             padding: 0;
             margin-top: 0;
             position: absolute;
-            right: 5px;
-            bottom: 2px;
+            right: 1%;
+            bottom: 0;
         }
     </style>
 </head>
@@ -143,31 +147,42 @@
     <div id='map'></div>
     <!--<i id="refresh" class="fa fa-refresh fa-2x" aria-hidden="true" style="position:absolute;"></i>-->
 
-    <div style="position: absolute; right: 0; width: 25%; height: 70%;">
-        <div class="panel panel-default">
-            <div class="panel-heading" style="background-color:rgba(121, 134, 134, 0.2); height: 12%;">
-                <div class="row">
-                    <center>
-                        <div class="btn-group" id="title">
-                            <button class="btn btn-default" id="hash" style="height:100%;" onclick="updateList('hash')"><strong><i class="fa fa-hashtag" aria-hidden="true"> 	</i>Hash</strong></button>
-                            <button class="btn btn-default" id="mention" style="height:100%;" onclick="updateList('mention')"><strong><i class="fa fa-at" aria-hidden="true"></i>Mention</strong></button>
-                        </div>
-                    </center>
+    <div style="position: absolute; right: 0; width: 35%; height: 70%;">
+
+        <div class="row col-lg-12" style="  padding-right:0; ">
+            <div class="panel panel-default col-lg-7" style="padding-left:0; padding-right:0;">
+                <div class="panel-heading" style="background-color:rgba(121, 134, 134, 0.2); height: 12%;">
+                    <div class="row">
+                        <center>
+                            <div class="btn-group" id="title">
+                                <button class="btn btn-default" id="hash" style="height:100%;" onclick="updateList('hash')"><strong><i class="fa fa-hashtag" aria-hidden="true"> 	</i>Hash</strong></button>
+                                <button class="btn btn-default" id="mention" style="height:100%;" onclick="updateList('mention')"><strong><i class="fa fa-at" aria-hidden="true"></i>Mention</strong></button>
+                            </div>
+                        </center>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-group" id="ranking" style="margin-bottom: 0;">
+                    </ul>
+                    <div id="timeLabel">Past 6hrs</div>
+                    <input type="range" min="1" max="24" step="1" value="6" id="pastTimeSelect" oninput="showTimeLabel(this.value)" onchange="refreshPastData()" style="width:100%">
                 </div>
             </div>
-            <div class="panel-body" >
-                <ul class="list-group" id="ranking" style="margin-bottom: 0;" >
-                </ul>
-                <div id="timeLabel" >Past 6hrs</div>
-                <input type="range" min="1" max="24" step="1" value="6" id="pastTimeSelect" oninput="showTimeLabel(this.value)" onchange="refreshPastData()" style="width:100%">
+            <div class="panel panel-danger col-lg-5" style="padding-left:0; padding-right:0;">
+                <div class="panel-heading" style=" height: 12%;">Tweets List</div>
+                <div class="panel-body">
+                    <ul class="list-group" id="tweetsList" >
+                    </ul>
+                </div>
             </div>
         </div>
- 
-		
     </div>
-<div class="row">
-    <svg id="trend" width="376", height="270" >Trend</svg>
+
+
+    <div class="row">
+        <svg id="trend" width="390" , height="270">Trend</svg>
     </div>
+
     <div class='row'>
         <div class="alert alert-info" id="tweetsbox"><span>Real-Time Tweets</span></div>
     </div>
@@ -197,11 +212,15 @@
                         var opacity = 1;
                         var cluster = false;
                         if (useStyle2) {
-						    if (i == 0) {r = 10;}
-						    else if (i == 1) { r = 8;}
-						    else if (i == 2) {r = 6;}
+                            if (i == 0) {
+                                r = 10;
+                            } else if (i == 1) {
+                                r = 8;
+                            } else if (i == 2) {
+                                r = 6;
+                            }
                             cluster = true;
-							opacity = 0.9
+                            opacity = 0.9
                         }
 
                         registerLayer("hash_" + i, listColor[i], cluster, opacity, r);
