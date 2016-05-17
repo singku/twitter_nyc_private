@@ -6,7 +6,7 @@ var mentionRank = []; //descending sorted array ...
 var lastHashData = new Map(); // [key,value] value is an obj include set of coords, and set of trends
 var lastMentionData = new Map();
 //var listColor = ["#b54a4a", "#b4704b", "#b4964b", "#8fba45", "#5bb946", "#4bb470", "#4cafb3", "#4894b7", "#5475ab", "#6353ac"];
-var listColor = ['#8b0000','#ba5211','#e08a3a','#fabc71','#ffeab7','#e8facf','#bae1b6','#8eb9a6','#5f849d','#004499'];
+var listColor = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf'];
 var tweets_temp = []; // Records data for real-time tweets
 var map;
 var animation = [[1, 0.5], [20, 0.8], [30, 0.4], [50, 0]];
@@ -354,8 +354,8 @@ function drawTrends(extraId) {
 	
 	var vis = d3.select("#trend");
 	var
-	WIDTH = 376,
-	HEIGHT = 270,
+	WIDTH = 390,
+	HEIGHT = 260,
 	MARGINS = {
 		top: 50,
 		right: 40,
