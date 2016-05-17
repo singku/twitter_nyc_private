@@ -430,6 +430,6 @@ function drawTrends(extraId) {
 		.attr("text-anchor", "middle")  
 		.attr("transform", "translate("+ (WIDTH/2) +","+(MARGINS.top-15)+")")
 		.text("Keys' Trend")
-        .style("font-size", "18px")
+        .style("font-size", "14px")
         .style("stroke", "red");
 }
