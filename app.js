@@ -334,7 +334,7 @@ function systemInit() {
 			step2();
 		}
 	});
-	
+
 	function step2() {
 		//load past 24hrs data as cache to speed up client reqs
 		console.log("Load history data...");
